@@ -9,7 +9,6 @@ html {
     scroll-behavior: smooth;
 }
 
-/* ===== Animierter Farb-Hintergrund ===== */
 
 body {
     min-height: 100vh;
@@ -95,8 +94,6 @@ body {
 
 
 
-
-/* ===== Avatar mit Puls-Glow ===== */
 
 .avatar {
     width: 90px;
