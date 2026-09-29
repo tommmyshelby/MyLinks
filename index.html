@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MyLinks</title>
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    
+    <div id="overlay" onclick="startSite()">
+        <p>CLICK TO ENTER</p>
+    </div>
+
+ 
+    <audio id="bg-music" loop>
+
+    </audio>
+
+    <!-- Hauptkarte -->
+    <main class="card">
+
+        <!-- Avatar -->
+        <div class="avatar">
+            <i class="fa-solid fa-user"></i>
+        </div>
+
+        <h1>MyLinks</h1>
+
+        <p class="bio">
+            Meine Links &amp; Socials
+        </p>
+
+
+        <button class="music-toggle" onclick="toggleMusic()">
+            <i id="music-icon" class="fa-solid fa-volume-xmark"></i>
+            <span id="music-status">Muted</span>
+        </button>
+
+
+        <div class="category">
+            Social
+        </div>
+
+        <a
+            class="link-btn"
+            href="https://discord.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            <i class="fa-brands fa-discord"></i>
+            Discord
+        </a>
+
+        <a
+            class="link-btn"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            <i class="fa-brands fa-instagram"></i>
+            Instagram
+        </a>
+
+        <a
+            class="link-btn"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            <i class="fa-brands fa-tiktok"></i>
+            TikTok
+        </a>
+
+        <!-- Projekte -->
+        <div class="category">
+            Projekte
+        </div>
+
+        <a
+            class="link-btn main-link"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            <i class="fa-solid fa-globe"></i>
+            Meine Website
+        </a>
+
+        <a
+            class="link-btn"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            <i class="fa-brands fa-github"></i>
+            GitHub
+        </a>
+
+    </main>
+
+    <script src="index.js"></script>
+
+</body>
+</html>
