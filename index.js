@@ -1,437 +1,1309 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
+:root {
+    --background: #08090c;
+    --background-soft: #0d0f14;
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <meta
-        name="theme-color"
-        content="#08090c"
-    >
+    --card: rgba(17, 19, 25, 0.78);
+    --card-hover: rgba(22, 24, 31, 0.92);
 
-    <meta
-        name="description"
-        content="Tommy – Discord Development, JavaScript, Python und Core3D."
-    >
+    --border: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(255, 255, 255, 0.15);
 
-    <title>Tommy — Links</title>
+    --text: #f5f5f7;
+    --text-soft: #a7aab2;
+    --text-muted: #70737c;
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    --accent: #8b5cf6;
+    --accent-light: #a78bfa;
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet"
-    >
+    --green: #35d07f;
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
-</head>
+    --radius: 22px;
 
-<body>
+    --font:
+        'Inter',
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        sans-serif;
+}
 
-    <!-- Hintergrund -->
-    <div class="background" aria-hidden="true">
-        <div class="background-glow glow-one"></div>
-        <div class="background-glow glow-two"></div>
-        <div class="background-grid"></div>
-    </div>
 
 
-    <!-- Start Overlay -->
-    <div
-        class="welcome-screen"
-        id="welcome-screen"
-    >
-        <div class="welcome-content">
 
-            <div class="welcome-logo">
-                T
-            </div>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-            <h1>
-                Willkommen
-            </h1>
 
-            <p>
-                Klicke zum Betreten
-            </p>
+html {
+    scroll-behavior: smooth;
+}
 
-            <button
-                class="enter-button"
-                id="enter-button"
-                type="button"
-            >
-                Seite betreten
-                <span>→</span>
-            </button>
 
-        </div>
-    </div>
+body {
+    min-height: 100vh;
 
+    background:
+        radial-gradient(
+            circle at top,
+            #11131a 0%,
+            var(--background) 50%
+        );
 
-    <main class="page">
+    color: var(--text);
 
-        <!-- Profil -->
-        <section class="profile">
+    font-family: var(--font);
 
-            <div class="profile-image-wrapper">
+    -webkit-font-smoothing: antialiased;
 
-                <img
-                    src="assets/images/profile.jpg"
-                    alt="Tommy"
-                    class="profile-image"
-                >
+    overflow-x: hidden;
+}
 
-                <span class="online-dot"></span>
 
-            </div>
+body.locked {
+    overflow: hidden;
+}
 
-            <h1>
-                Tommy
-            </h1>
 
-            <p class="profile-location">
-                17 Jahre · Österreich
-            </p>
+button,
+input {
+    font: inherit;
+}
 
-            <p class="bio">
-                Ich programmiere gerne und beschäftige mich hauptsächlich
-                mit Discord Development, JavaScript und Python.
-                Nebenbei arbeite ich an eigenen Projekten und probiere
-                gerne neue Dinge aus.
-            </p>
 
-        </section>
 
 
-        <!-- Musik -->
-        <section class="music-card">
+.background {
+    position: fixed;
 
-            <div class="music-cover">
+    inset: 0;
 
-                <div class="music-cover-overlay"></div>
+    z-index: -1;
 
-                <div class="music-cover-text">
-                    <span>NEFFEX</span>
-                    <strong>BURN<br>THE BRIDGE</strong>
-                </div>
+    pointer-events: none;
 
-            </div>
+    overflow: hidden;
+}
 
 
-            <div class="music-content">
+.background-glow {
+    position: absolute;
 
-                <div class="music-top">
+    width: 550px;
+    height: 550px;
 
-                    <div>
-                        <span class="music-label">
-                            NOW PLAYING
-                        </span>
-
-                        <h2 id="track-title">
-                            BURN THE BRIDGE
-                        </h2>
+    border-radius: 50%;
 
-                        <p id="track-artist">
-                            NEFFEX
-                        </p>
-                    </div>
+    filter: blur(120px);
 
-                    <a
-                        class="soundcloud-button"
-                        href="https://soundcloud.com/neffexmusic/burn-the-bridge-copyright-free"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label="NEFFEX auf SoundCloud öffnen"
-                    >
-                        SoundCloud
-                    </a>
+    opacity: 0.18;
+}
 
-                </div>
 
+.glow-one {
+    top: -250px;
+    left: -150px;
 
-                <div class="music-controls">
+    background: #7c3aed;
+}
 
-                    <button
-                        class="play-button"
-                        id="play-button"
-                        type="button"
-                        aria-label="Musik abspielen"
-                    >
 
-                        <svg
-                            class="play-icon"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
-                            <path d="M8 5v14l11-7z"></path>
-                        </svg>
+.glow-two {
+    right: -200px;
+    bottom: -300px;
 
-                        <svg
-                            class="pause-icon"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
-                            <path d="M7 5h4v14H7z"></path>
-                            <path d="M13 5h4v14h-4z"></path>
-                        </svg>
+    background: #2563eb;
+}
 
-                    </button>
 
+.background-grid {
+    position: absolute;
 
-                    <div class="music-progress-area">
+    inset: 0;
 
-                        <div class="music-time">
+    opacity: 0.15;
 
-                            <span id="current-time">
-                                0:00
-                            </span>
+    background-image:
+        linear-gradient(
+            rgba(255,255,255,0.025) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255,255,255,0.025) 1px,
+            transparent 1px
+        );
 
-                            <span id="duration">
-                                0:00
-                            </span>
+    background-size: 60px 60px;
 
-                        </div>
+    mask-image:
+        radial-gradient(
+            ellipse at center,
+            black 20%,
+            transparent 75%
+        );
+}
 
-                        <input
-                            id="seek"
-                            class="progress"
-                            type="range"
-                            min="0"
-                            max="100"
-                            value="0"
-                            step="0.1"
-                            aria-label="Musikposition"
-                        >
 
-                    </div>
 
+.welcome-screen {
+    position: fixed;
 
-                    <button
-                        class="volume-button"
-                        id="volume-button"
-                        type="button"
-                        aria-label="Stummschalten"
-                    >
+    inset: 0;
 
-                        <svg
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
-                            <path d="M4 9v6h4l5 4V5L8 9H4z"></path>
-                            <path
-                                d="M16 9.5a4 4 0 0 1 0 5"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="1.7"
-                                stroke-linecap="round"
-                            ></path>
-                        </svg>
+    z-index: 100;
 
-                    </button>
+    display: flex;
 
-                </div>
+    align-items: center;
+    justify-content: center;
 
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(139, 92, 246, 0.10),
+            rgba(8, 9, 12, 0.98) 60%
+        );
 
-                <div class="volume-area">
+    backdrop-filter: blur(15px);
 
-                    <input
-                        id="volume"
-                        class="volume-slider"
-                        type="range"
-                        min="0"
-                        max="1"
-                        step="0.01"
-                        value="0.5"
-                        aria-label="Lautstärke"
-                    >
+    transition:
+        opacity 0.7s ease,
+        visibility 0.7s ease;
+}
 
-                </div>
 
-            </div>
+.welcome-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
 
-            <audio
-                id="audio"
-                preload="metadata"
-            ></audio>
+    pointer-events: none;
+}
 
-        </section>
 
+.welcome-content {
+    text-align: center;
 
-        <!-- Server -->
-        <section class="section">
+    animation: welcomeFloat 1.2s ease both;
+}
 
-            <div class="section-heading">
 
-                <span class="section-line"></span>
+@keyframes welcomeFloat {
 
-                <h2>
-                    Meine Projekte
-                </h2>
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
 
-                <span class="section-line"></span>
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 
-            </div>
+}
 
 
-            <!-- Core3D -->
-            <a
-                href="https://discord.gg/33mb9W3KgB"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="project-card core3d-card"
-            >
+.welcome-logo {
+    width: 76px;
+    height: 76px;
 
-                <div class="project-icon core3d-icon">
-                    3D
-                </div>
+    margin: 0 auto 25px;
 
-                <div class="project-info">
+    display: flex;
 
-                    <div class="project-title-row">
+    align-items: center;
+    justify-content: center;
 
-                        <h3>
-                            Core3D
-                        </h3>
+    border-radius: 24px;
 
-                        <span class="status active">
-                            Community
-                        </span>
+    background:
+        linear-gradient(
+            135deg,
+            var(--accent),
+            #6d28d9
+        );
 
-                    </div>
+    box-shadow:
+        0 20px 60px rgba(139, 92, 246, 0.35);
 
-                    <p>
-                        Alles rund um 3D Design, Modellierung,
-                        eigene Projekte und kreative Ideen.
-                    </p>
+    font-size: 30px;
+    font-weight: 800;
+}
 
-                    <span class="project-link">
-                        Discord öffnen
-                        <span>→</span>
-                    </span>
 
-                </div>
+.welcome-content h1 {
+    font-size: 32px;
 
-            </a>
+    letter-spacing: -0.04em;
+}
 
 
-            <!-- EAS -->
-            <div class="project-card eas-card">
+.welcome-content p {
+    margin-top: 8px;
 
-                <div class="eas-image">
+    color: var(--text-muted);
 
-                    <img
-                        src="assets/images/eas.jpg"
-                        alt="EAS Projekt"
-                    >
+    font-size: 14px;
+}
 
-                    <div class="eas-overlay"></div>
 
-                    <span class="coming-soon">
-                        COMING SOON
-                    </span>
+.enter-button {
+    margin-top: 28px;
 
-                </div>
+    display: inline-flex;
 
+    align-items: center;
+    justify-content: center;
 
-                <div class="project-info">
+    gap: 12px;
 
-                    <div class="project-title-row">
+    padding: 13px 20px;
 
-                        <h3>
-                            EAS
-                        </h3>
+    border: 1px solid var(--border);
 
-                        <span class="status development">
-                            In Entwicklung
-                        </span>
+    border-radius: 12px;
 
-                    </div>
+    background: rgba(255,255,255,0.05);
 
-                    <p>
-                        Ein neues Spiel befindet sich aktuell
-                        in Entwicklung und kommt bald.
-                    </p>
+    color: var(--text);
 
-                    <span class="project-link disabled">
-                        Spiel in Entwicklung
-                    </span>
+    cursor: pointer;
 
-                </div>
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
 
-            </div>
 
-        </section>
+.enter-button span {
+    font-size: 18px;
 
+    transition:
+        transform 0.2s ease;
+}
 
-        <!-- Skills -->
-        <section class="section">
 
-            <div class="section-heading">
+.enter-button:hover {
+    transform: translateY(-2px);
 
-                <span class="section-line"></span>
+    background: rgba(255,255,255,0.08);
 
-                <h2>
-                    Was ich mache
-                </h2>
+    border-color: var(--border-hover);
+}
 
-                <span class="section-line"></span>
 
-            </div>
+.enter-button:hover span {
+    transform: translateX(4px);
+}
 
 
-            <div class="skills">
 
-                <div class="skill">
-                    <span class="skill-icon">JS</span>
-                    <span>JavaScript</span>
-                </div>
 
-                <div class="skill">
-                    <span class="skill-icon">PY</span>
-                    <span>Python</span>
-                </div>
+.page {
+    width: min(100% - 32px, 620px);
 
-                <div class="skill">
-                    <span class="skill-icon">DC</span>
-                    <span>Discord Development</span>
-                </div>
+    margin: 0 auto;
 
-                <div class="skill">
-                    <span class="skill-icon">3D</span>
-                    <span>3D Design</span>
-                </div>
+    padding:
+        80px
+        0
+        50px;
+}
 
-            </div>
 
-        </section>
 
+.profile {
+    text-align: center;
 
-        <footer>
+    animation:
+        fadeUp 0.8s ease both;
+}
 
-            <div class="footer-line"></div>
 
-            <p>
-                © 2026 Tommy
-            </p>
+@keyframes fadeUp {
 
-            <span>
-                Made with code & coffee.
-            </span>
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
 
-        </footer>
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 
-    </main>
+}
 
 
-    <script src="index.js"></script>
+.profile-image-wrapper {
+    position: relative;
 
-</body>
-</html>
+    width: 108px;
+    height: 108px;
+
+    margin: 0 auto 20px;
+}
+
+
+.profile-image {
+    width: 108px;
+    height: 108px;
+
+    object-fit: cover;
+
+    border-radius: 50%;
+
+    border: 3px solid rgba(255,255,255,0.12);
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,0.45);
+}
+
+
+.online-dot {
+    position: absolute;
+
+    right: 3px;
+    bottom: 5px;
+
+    width: 19px;
+    height: 19px;
+
+    border-radius: 50%;
+
+    background: var(--green);
+
+    border: 4px solid var(--background);
+
+    box-shadow:
+        0 0 18px rgba(53,208,127,0.45);
+}
+
+
+.profile h1 {
+    font-size: 36px;
+
+    line-height: 1.1;
+
+    letter-spacing: -0.055em;
+
+    font-weight: 800;
+}
+
+
+.profile-location {
+    margin-top: 7px;
+
+    color: var(--text-muted);
+
+    font-size: 14px;
+}
+
+
+.bio {
+    max-width: 500px;
+
+    margin: 22px auto 0;
+
+    color: var(--text-soft);
+
+    font-size: 14px;
+
+    line-height: 1.8;
+}
+
+
+
+
+.music-card {
+    position: relative;
+
+    display: grid;
+
+    grid-template-columns: 145px 1fr;
+
+    margin-top: 35px;
+
+    overflow: hidden;
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(139,92,246,0.12),
+            rgba(255,255,255,0.025)
+        );
+
+    backdrop-filter: blur(20px);
+
+    box-shadow:
+        0 25px 80px rgba(0,0,0,0.28);
+
+    animation:
+        fadeUp 0.8s 0.1s ease both;
+}
+
+
+.music-cover {
+    position: relative;
+
+    min-height: 190px;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            135deg,
+            #181b24,
+            #090a0d
+        );
+}
+
+
+.music-cover::before {
+    content: "";
+
+    position: absolute;
+
+    width: 190px;
+    height: 190px;
+
+    left: -35px;
+    top: 10px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(139,92,246,0.55),
+            transparent 65%
+        );
+
+    filter: blur(20px);
+}
+
+
+.music-cover-overlay {
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(0,0,0,0.1),
+            rgba(0,0,0,0.8)
+        );
+}
+
+
+.music-cover-text {
+    position: absolute;
+
+    inset: auto 16px 18px;
+
+    display: flex;
+
+    flex-direction: column;
+}
+
+
+.music-cover-text span {
+    color: var(--accent-light);
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.18em;
+}
+
+
+.music-cover-text strong {
+    margin-top: 4px;
+
+    font-size: 18px;
+
+    line-height: 1.05;
+
+    letter-spacing: -0.04em;
+}
+
+
+.music-content {
+    min-width: 0;
+
+    padding: 21px;
+}
+
+
+.music-top {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    gap: 15px;
+}
+
+
+.music-label {
+    color: var(--accent-light);
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.15em;
+}
+
+
+.music-top h2 {
+    margin-top: 5px;
+
+    font-size: 16px;
+
+    letter-spacing: -0.025em;
+}
+
+
+.music-top p {
+    margin-top: 2px;
+
+    color: var(--text-muted);
+
+    font-size: 12px;
+}
+
+
+.soundcloud-button {
+    flex-shrink: 0;
+
+    padding: 7px 10px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    color: var(--text-soft);
+
+    font-size: 10px;
+
+    text-decoration: none;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+
+.soundcloud-button:hover {
+    background: rgba(255,255,255,0.07);
+
+    color: white;
+}
+
+
+.music-controls {
+    display: grid;
+
+    grid-template-columns:
+        42px
+        minmax(0, 1fr)
+        30px;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin-top: 24px;
+}
+
+
+.play-button {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+
+    border-radius: 50%;
+
+    background: var(--text);
+
+    color: #090a0d;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.play-button:hover {
+    transform: scale(1.06);
+
+    box-shadow:
+        0 8px 25px rgba(255,255,255,0.12);
+}
+
+
+.play-button svg {
+    width: 17px;
+    height: 17px;
+
+    fill: currentColor;
+}
+
+
+.pause-icon {
+    display: none;
+}
+
+
+.play-button.playing .play-icon {
+    display: none;
+}
+
+
+.play-button.playing .pause-icon {
+    display: block;
+}
+
+
+.music-progress-area {
+    min-width: 0;
+}
+
+
+.music-time {
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-bottom: 5px;
+
+    color: var(--text-muted);
+
+    font-size: 9px;
+}
+
+
+.progress,
+.volume-slider {
+    width: 100%;
+
+    height: 4px;
+
+    appearance: none;
+
+    -webkit-appearance: none;
+
+    border-radius: 99px;
+
+    background: rgba(255,255,255,0.10);
+
+    cursor: pointer;
+}
+
+
+.progress::-webkit-slider-thumb,
+.volume-slider::-webkit-slider-thumb {
+    appearance: none;
+
+    width: 11px;
+    height: 11px;
+
+    border-radius: 50%;
+
+    border: 0;
+
+    background: var(--text);
+}
+
+
+.progress::-moz-range-thumb,
+.volume-slider::-moz-range-thumb {
+    width: 11px;
+    height: 11px;
+
+    border-radius: 50%;
+
+    border: 0;
+
+    background: var(--text);
+}
+
+
+.volume-button {
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+
+    background: transparent;
+
+    color: var(--text-soft);
+
+    cursor: pointer;
+}
+
+
+.volume-button svg {
+    width: 18px;
+    height: 18px;
+
+    fill: currentColor;
+}
+
+
+.volume-area {
+    margin-top: 8px;
+
+    margin-left: 54px;
+
+    opacity: 0.65;
+}
+
+
+.volume-slider {
+    height: 3px;
+}
+
+
+
+
+.section {
+    margin-top: 42px;
+
+    animation:
+        fadeUp 0.8s 0.2s ease both;
+}
+
+
+.section-heading {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin-bottom: 13px;
+}
+
+
+.section-heading h2 {
+    flex-shrink: 0;
+
+    color: var(--text-soft);
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.15em;
+}
+
+
+.section-line {
+    width: 100%;
+
+    height: 1px;
+
+    background: var(--border);
+}
+
+
+
+
+.project-card {
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 17px;
+
+    width: 100%;
+
+    padding: 18px;
+
+    margin-bottom: 12px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 17px;
+
+    background: var(--card);
+
+    color: var(--text);
+
+    text-decoration: none;
+
+    overflow: hidden;
+
+    backdrop-filter: blur(15px);
+
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        background 0.25s ease;
+}
+
+
+.project-card:hover {
+    transform: translateY(-3px);
+
+    background: var(--card-hover);
+
+    border-color: var(--border-hover);
+}
+
+
+.project-icon {
+    flex-shrink: 0;
+
+    width: 58px;
+    height: 58px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 15px;
+
+    font-weight: 800;
+
+    font-size: 13px;
+
+    letter-spacing: -0.04em;
+}
+
+
+.core3d-icon {
+    background:
+        linear-gradient(
+            135deg,
+            #8b5cf6,
+            #4f46e5
+        );
+
+    box-shadow:
+        0 10px 30px rgba(99,102,241,0.2);
+}
+
+
+.project-info {
+    min-width: 0;
+
+    flex: 1;
+}
+
+
+.project-title-row {
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+}
+
+
+.project-title-row h3 {
+    font-size: 16px;
+
+    font-weight: 700;
+
+    letter-spacing: -0.025em;
+}
+
+
+.status {
+    padding: 3px 7px;
+
+    border-radius: 6px;
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.07em;
+}
+
+
+.status.active {
+    color: #9cf0bd;
+
+    background:
+        rgba(53,208,127,0.10);
+}
+
+
+.status.development {
+    color: #c4b5fd;
+
+    background:
+        rgba(139,92,246,0.12);
+}
+
+
+.project-info p {
+    margin-top: 5px;
+
+    color: var(--text-muted);
+
+    font-size: 12px;
+
+    line-height: 1.6;
+}
+
+
+.project-link {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    margin-top: 10px;
+
+    color: var(--text-soft);
+
+    font-size: 10px;
+
+    font-weight: 600;
+}
+
+
+.project-link span {
+    transition:
+        transform 0.2s ease;
+}
+
+
+.project-card:hover .project-link span {
+    transform: translateX(4px);
+}
+
+
+.project-link.disabled {
+    color: var(--accent-light);
+}
+
+
+
+.eas-card {
+    display: block;
+
+    padding: 0;
+
+    cursor: default;
+}
+
+
+.eas-card:hover {
+    transform: translateY(-2px);
+}
+
+
+.eas-image {
+    position: relative;
+
+    width: 100%;
+
+    height: 210px;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            135deg,
+            #151720,
+            #090a0d
+        );
+}
+
+
+.eas-image img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+
+    transition:
+        transform 0.5s ease;
+}
+
+
+.eas-card:hover .eas-image img {
+    transform: scale(1.035);
+}
+
+
+.eas-overlay {
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        linear-gradient(
+            to top,
+            rgba(5,6,9,0.85),
+            rgba(5,6,9,0.05) 70%
+        );
+}
+
+
+.coming-soon {
+    position: absolute;
+
+    left: 18px;
+    bottom: 16px;
+
+    padding: 7px 10px;
+
+    border-radius: 8px;
+
+    background:
+        rgba(0,0,0,0.55);
+
+    border: 1px solid rgba(255,255,255,0.12);
+
+    backdrop-filter: blur(10px);
+
+    color: white;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.12em;
+}
+
+
+.eas-card .project-info {
+    padding: 17px 18px 18px;
+}
+
+
+
+
+.skills {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 10px;
+}
+
+
+.skill {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 12px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 13px;
+
+    background:
+        rgba(255,255,255,0.025);
+
+    color: var(--text-soft);
+
+    font-size: 11px;
+
+    font-weight: 500;
+}
+
+
+.skill-icon {
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background:
+        rgba(139,92,246,0.12);
+
+    color: var(--accent-light);
+
+    font-size: 8px;
+
+    font-weight: 800;
+}
+
+
+
+
+footer {
+    margin-top: 50px;
+
+    text-align: center;
+}
+
+
+.footer-line {
+    width: 50px;
+
+    height: 1px;
+
+    margin: 0 auto 20px;
+
+    background: var(--border);
+}
+
+
+footer p {
+    color: var(--text-muted);
+
+    font-size: 10px;
+}
+
+
+footer span {
+    display: block;
+
+    margin-top: 4px;
+
+    color: #4f525a;
+
+    font-size: 9px;
+}
+
+
+
+@media (max-width: 620px) {
+
+    .page {
+        width: min(100% - 22px, 620px);
+
+        padding-top: 55px;
+    }
+
+
+    .profile h1 {
+        font-size: 32px;
+    }
+
+
+    .music-card {
+        grid-template-columns: 1fr;
+    }
+
+
+    .music-cover {
+        min-height: 170px;
+    }
+
+
+    .music-cover-text {
+        left: 20px;
+        bottom: 18px;
+    }
+
+
+    .music-content {
+        padding: 18px;
+    }
+
+
+    .soundcloud-button {
+        display: none;
+    }
+
+
+    .project-card {
+        padding: 15px;
+    }
+
+
+    .project-icon {
+        width: 52px;
+        height: 52px;
+    }
+
+
+    .eas-image {
+        height: 180px;
+    }
+
+}
+
+
+@media (max-width: 400px) {
+
+    .skills {
+        grid-template-columns: 1fr;
+    }
+
+
+    .profile-image-wrapper,
+    .profile-image {
+        width: 96px;
+        height: 96px;
+    }
+
+
+    .profile h1 {
+        font-size: 29px;
+    }
+
+
+    .bio {
+        font-size: 13px;
+    }
+
+}
+
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+
+        transition-duration: 0.01ms !important;
+
+        scroll-behavior: auto !important;
+    }
+
+}
