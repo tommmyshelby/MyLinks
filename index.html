@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>MyLinks</title>
+    <title>Tommy | MyLinks</title>
 
     <link
         rel="stylesheet"
@@ -16,99 +16,173 @@
 
 <body>
 
-    
-    <div id="overlay" onclick="startSite()">
-        <p>CLICK TO ENTER</p>
-    </div>
-
- 
-    <audio id="bg-music" loop>
-
-    </audio>
-
-    <!-- Hauptkarte -->
     <main class="card">
 
-        <!-- Avatar -->
+      
         <div class="avatar">
             <i class="fa-solid fa-user"></i>
         </div>
 
-        <h1>MyLinks</h1>
+        <h1>Tommy</h1>
 
         <p class="bio">
-            Meine Links &amp; Socials
+            Hey, ich bin Tommy, 17 Jahre alt und komme aus Österreich.
+            In meiner Freizeit beschäftige ich mich gerne mit Programmieren,
+            hauptsächlich für mich selbst und im Freundeskreis.
+            Am meisten arbeite ich mit JavaScript und Python und beschäftige
+            mich gerne mit Discord Development.
         </p>
 
 
-        <button class="music-toggle" onclick="toggleMusic()">
-            <i id="music-icon" class="fa-solid fa-volume-xmark"></i>
-            <span id="music-status">Muted</span>
-        </button>
+        <!-- Infos -->
+        <div class="info-box">
 
+            <div class="info-item">
+                <span class="info-title">
+                    <i class="fa-solid fa-code"></i>
+                    Sprachen
+                </span>
 
-        <div class="category">
-            Social
+                <span class="info-value">
+                    JavaScript · Python
+                </span>
+            </div>
+
+            <div class="info-item">
+                <span class="info-title">
+                    <i class="fa-solid fa-gamepad"></i>
+                    Hobby
+                </span>
+
+                <span class="info-value">
+                    Discord Development
+                </span>
+            </div>
+
+            <div class="info-item">
+                <span class="info-title">
+                    <i class="fa-solid fa-location-dot"></i>
+                    Standort
+                </span>
+
+                <span class="info-value">
+                    Österreich
+                </span>
+            </div>
+
         </div>
 
-        <a
-            class="link-btn"
-            href="https://discord.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-            <i class="fa-brands fa-discord"></i>
-            Discord
-        </a>
 
-        <a
-            class="link-btn"
-            href="#"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-            <i class="fa-brands fa-instagram"></i>
-            Instagram
-        </a>
-
-        <a
-            class="link-btn"
-            href="#"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-            <i class="fa-brands fa-tiktok"></i>
-            TikTok
-        </a>
-
-        <!-- Projekte -->
+    
         <div class="category">
-            Projekte
+            <i class="fa-solid fa-music"></i>
+            Aktueller Song
+        </div>
+
+        <div class="spotify">
+            <iframe
+                data-testid="embed-iframe"
+                src="https://open.spotify.com/embed/track/0jgAOQ2Nk6qunsEY6ehNlJ?utm_source=generator&si=291787dff1884fbb"
+                width="100%"
+                height="352"
+                frameborder="0"
+                allowfullscreen=""
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                loading="lazy">
+            </iframe>
+        </div>
+
+
+   
+        <div class="category">
+            <i class="fa-brands fa-discord"></i>
+            Meine Server
         </div>
 
         <a
             class="link-btn main-link"
-            href="#"
+            href="https://discord.gg/psWpDMpBX"
             target="_blank"
             rel="noopener noreferrer"
         >
-            <i class="fa-solid fa-globe"></i>
-            Meine Website
+            <i class="fa-brands fa-discord"></i>
+
+            <span>
+                <strong>Meine Community</strong>
+                <small>Mein eigener Community Server</small>
+            </span>
+
+            <i class="fa-solid fa-arrow-up-right-from-square arrow"></i>
         </a>
 
         <a
             class="link-btn"
-            href="#"
+            href="https://discord.gg/33mb9W3KgB"
             target="_blank"
             rel="noopener noreferrer"
         >
-            <i class="fa-brands fa-github"></i>
-            GitHub
+            <i class="fa-brands fa-discord"></i>
+
+            <span>
+                <strong>Core3D</strong>
+                <small>Mein Server / Projekt</small>
+            </span>
+
+            <i class="fa-solid fa-arrow-up-right-from-square arrow"></i>
         </a>
 
-    </main>
 
-    <script src="index.js"></script>
+        <!-- Freunde -->
+        <div class="category">
+            <i class="fa-solid fa-users"></i>
+            Freunde
+        </div>
+
+        <a
+            class="link-btn"
+            href="https://discord.gg/KmdpUn3Xad"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            <i class="fa-brands fa-discord"></i>
+
+            <span>
+                <strong>Juba Community</strong>
+                <small>Community von Freunden</small>
+            </span>
+
+            <i class="fa-solid fa-arrow-up-right-from-square arrow"></i>
+        </a>
+
+
+        <!-- Gaming -->
+        <div class="category">
+            <i class="fa-solid fa-gamepad"></i>
+            Gaming
+        </div>
+
+        <a
+            class="link-btn"
+            href="https://discord.gg/jcWz7p3KDe"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            <i class="fa-brands fa-discord"></i>
+
+            <span>
+                <strong>EAS</strong>
+                <small>Gaming Server</small>
+            </span>
+
+            <i class="fa-solid fa-arrow-up-right-from-square arrow"></i>
+        </a>
+
+
+        <footer>
+            © 2026 Tommy
+        </footer>
+
+    </main>
 
 </body>
 </html>
