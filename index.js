@@ -1,259 +1,437 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
 
-'use strict';
-
-
-
-
-const CONFIG = {
-    track: {
-        title:  'Herr Inspektor',
-        artist: 'Seiler und Speer',
-        file:   'assets/audio/herr-inspektor.mp3',
-    },
-    defaultVolume: 0.5,
-    particleCount: 70,
-};
-
-
-
-
-const $ = (id) => document.getElementById(id);
-
-const els = {
-    enter:  $('enter'),
-    audio:  $('audio'),
-    play:   $('play'),
-    seek:   $('seek'),
-    volume: $('volume'),
-    title:  $('track-title'),
-    artist: $('track-artist'),
-    canvas: $('background'),
-};
-
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-function setRangeFill(range) {
-    const span = Number(range.max) - Number(range.min);
-    const percent = ((Number(range.value) - Number(range.min)) / span) * 100;
-    range.style.setProperty('--fill', `${percent}%`);
-}
-
-function updatePlayButton() {
-    const paused = els.audio.paused;
-    els.play.classList.toggle('is-paused', paused);
-    els.play.setAttribute('aria-label', paused ? 'Abspielen' : 'Pause');
-}
-
-function loadSavedVolume() {
-    try {
-        const saved = parseFloat(localStorage.getItem('volume'));
-        return Number.isNaN(saved) ? CONFIG.defaultVolume : saved;
-    } catch {
-        return CONFIG.defaultVolume;
-    }
-}
-
-function saveVolume(value) {
-    try {
-        localStorage.setItem('volume', String(value));
-    } catch {
-      
-    }
-}
-
-function initPlayer() {
-    els.title.textContent  = CONFIG.track.title;
-    els.artist.textContent = CONFIG.track.artist;
-    els.audio.src = CONFIG.track.file;
-
-    els.audio.volume = loadSavedVolume();
-    els.volume.value = els.audio.volume;
-    setRangeFill(els.volume);
-    setRangeFill(els.seek);
-    updatePlayButton();
-
-    els.play.addEventListener('click', () => {
-        if (els.audio.paused) {
-            els.audio.play().catch(() => {});
-        } else {
-            els.audio.pause();
-        }
-    });
-
-    els.volume.addEventListener('input', () => {
-        els.audio.volume = Number(els.volume.value);
-        setRangeFill(els.volume);
-        saveVolume(els.audio.volume);
-    });
-
-    els.seek.addEventListener('input', () => {
-        if (els.audio.duration) {
-            els.audio.currentTime = (els.seek.value / 100) * els.audio.duration;
-        }
-        setRangeFill(els.seek);
-    });
-
-    els.audio.addEventListener('timeupdate', () => {
-        if (!els.audio.duration || document.activeElement === els.seek) return;
-        els.seek.value = (els.audio.currentTime / els.audio.duration) * 100;
-        setRangeFill(els.seek);
-    });
-
-    els.audio.addEventListener('play',  updatePlayButton);
-    els.audio.addEventListener('pause', updatePlayButton);
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#08090c"
+    >
 
-    els.audio.addEventListener('error', () => {
-        els.artist.textContent = `Audiodatei fehlt: ${CONFIG.track.file}`;
-    });
-}
+    <meta
+        name="description"
+        content="Tommy – Discord Development, JavaScript, Python und Core3D."
+    >
 
+    <title>Tommy — Links</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-const analysis = {
-    analyser: null,
-    data: null,
-};
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
 
-function initAnalyser() {
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    const isServed = location.protocol.startsWith('http');
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+</head>
 
-  
-    if (!AudioContextClass || !isServed || analysis.analyser) return;
+<body>
 
-    const context = new AudioContextClass();
-    const source  = context.createMediaElementSource(els.audio);
+    <!-- Hintergrund -->
+    <div class="background" aria-hidden="true">
+        <div class="background-glow glow-one"></div>
+        <div class="background-glow glow-two"></div>
+        <div class="background-grid"></div>
+    </div>
 
-    analysis.analyser = context.createAnalyser();
-    analysis.analyser.fftSize = 256;
-    analysis.analyser.smoothingTimeConstant = 0.8;
-    analysis.data = new Uint8Array(analysis.analyser.frequencyBinCount);
 
-    source.connect(analysis.analyser);
-    analysis.analyser.connect(context.destination);
-}
+    <!-- Start Overlay -->
+    <div
+        class="welcome-screen"
+        id="welcome-screen"
+    >
+        <div class="welcome-content">
 
-function averageRange(from, to) {
-    let sum = 0;
-    for (let i = from; i < to; i++) sum += analysis.data[i];
-    return sum / (to - from) / 255;
-}
+            <div class="welcome-logo">
+                T
+            </div>
 
+            <h1>
+                Willkommen
+            </h1>
 
-function readEnergy() {
-    if (!analysis.analyser || els.audio.paused) {
-        return { bass: 0, overall: 0 };
-    }
+            <p>
+                Klicke zum Betreten
+            </p>
 
-    analysis.analyser.getByteFrequencyData(analysis.data);
+            <button
+                class="enter-button"
+                id="enter-button"
+                type="button"
+            >
+                Seite betreten
+                <span>→</span>
+            </button>
 
-    return {
-        bass:    averageRange(0, 6),
-        overall: averageRange(0, 64),
-    };
-}
+        </div>
+    </div>
 
 
+    <main class="page">
 
-const background = {
-    ctx: els.canvas.getContext('2d'),
-    width: 0,
-    height: 0,
-    particles: [],
-    bass: 0,
-    overall: 0,
-};
+        <!-- Profil -->
+        <section class="profile">
 
-function createParticle(randomY = true) {
-    return {
-        x: Math.random() * background.width,
-        y: randomY ? Math.random() * background.height : background.height + 10,
-        size: 0.6 + Math.random() * 1.8,
-        speed: 0.15 + Math.random() * 0.45,
-        drift: (Math.random() - 0.5) * 0.3,
-        alpha: 0.15 + Math.random() * 0.4,
-    };
-}
+            <div class="profile-image-wrapper">
 
-function resizeBackground() {
-    const ratio = window.devicePixelRatio || 1;
+                <img
+                    src="assets/images/profile.jpg"
+                    alt="Tommy"
+                    class="profile-image"
+                >
 
-    background.width  = window.innerWidth;
-    background.height = window.innerHeight;
+                <span class="online-dot"></span>
 
-    els.canvas.width  = background.width * ratio;
-    els.canvas.height = background.height * ratio;
-    background.ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+            </div>
 
-    background.particles = Array.from(
-        { length: CONFIG.particleCount },
-        () => createParticle()
-    );
-}
+            <h1>
+                Tommy
+            </h1>
 
-function drawGlow(x, y, radius, color, alpha) {
-    const gradient = background.ctx.createRadialGradient(x, y, 0, x, y, radius);
-    gradient.addColorStop(0, `rgba(${color}, ${alpha})`);
-    gradient.addColorStop(1, `rgba(${color}, 0)`);
+            <p class="profile-location">
+                17 Jahre · Österreich
+            </p>
 
-    background.ctx.fillStyle = gradient;
-    background.ctx.fillRect(0, 0, background.width, background.height);
-}
+            <p class="bio">
+                Ich programmiere gerne und beschäftige mich hauptsächlich
+                mit Discord Development, JavaScript und Python.
+                Nebenbei arbeite ich an eigenen Projekten und probiere
+                gerne neue Dinge aus.
+            </p>
 
-function drawParticles() {
-    const boost = 1 + background.overall * 5;
+        </section>
 
-    for (const p of background.particles) {
-        p.y -= p.speed * boost;
-        p.x += p.drift * boost;
 
-        if (p.y < -10) Object.assign(p, createParticle(false));
+        <!-- Musik -->
+        <section class="music-card">
 
-        background.ctx.beginPath();
-        background.ctx.arc(p.x, p.y, p.size * (1 + background.bass), 0, Math.PI * 2);
-        background.ctx.fillStyle = `rgba(233, 225, 211, ${p.alpha * (0.5 + background.overall)})`;
-        background.ctx.fill();
-    }
-}
+            <div class="music-cover">
 
-function drawBackground() {
-    const { ctx, width, height } = background;
-    const energy = readEnergy();
+                <div class="music-cover-overlay"></div>
 
+                <div class="music-cover-text">
+                    <span>NEFFEX</span>
+                    <strong>BURN<br>THE BRIDGE</strong>
+                </div>
 
-    background.bass    += (energy.bass    - background.bass)    * 0.12;
-    background.overall += (energy.overall - background.overall) * 0.08;
+            </div>
 
-    const pulse = prefersReducedMotion ? 0 : background.bass;
-    const reach = Math.max(width, height);
 
-    ctx.fillStyle = '#0d0b0b';
-    ctx.fillRect(0, 0, width, height);
+            <div class="music-content">
 
-   
-    drawGlow(width * 0.15, height * 0.95, reach * (0.45 + pulse * 0.35), '122, 34, 41',  0.35 + pulse * 0.45);
-    drawGlow(width * 0.85, height * 0.10, reach * (0.35 + pulse * 0.25), '184, 148, 90', 0.10 + pulse * 0.25);
+                <div class="music-top">
 
-    if (!prefersReducedMotion) drawParticles();
+                    <div>
+                        <span class="music-label">
+                            NOW PLAYING
+                        </span>
+
+                        <h2 id="track-title">
+                            BURN THE BRIDGE
+                        </h2>
 
-    requestAnimationFrame(drawBackground);
-}
+                        <p id="track-artist">
+                            NEFFEX
+                        </p>
+                    </div>
 
-function initBackground() {
-    resizeBackground();
-    window.addEventListener('resize', resizeBackground);
-    requestAnimationFrame(drawBackground);
-}
+                    <a
+                        class="soundcloud-button"
+                        href="https://soundcloud.com/neffexmusic/burn-the-bridge-copyright-free"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="NEFFEX auf SoundCloud öffnen"
+                    >
+                        SoundCloud
+                    </a>
 
+                </div>
 
 
+                <div class="music-controls">
 
-function enterSite() {
-    document.body.classList.add('is-entered');
-    initAnalyser();
-    els.audio.play().catch(() => {});
-}
+                    <button
+                        class="play-button"
+                        id="play-button"
+                        type="button"
+                        aria-label="Musik abspielen"
+                    >
 
-initPlayer();
-initBackground();
-els.enter.addEventListener('click', enterSite, { once: true });
+                        <svg
+                            class="play-icon"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path d="M8 5v14l11-7z"></path>
+                        </svg>
+
+                        <svg
+                            class="pause-icon"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path d="M7 5h4v14H7z"></path>
+                            <path d="M13 5h4v14h-4z"></path>
+                        </svg>
+
+                    </button>
+
+
+                    <div class="music-progress-area">
+
+                        <div class="music-time">
+
+                            <span id="current-time">
+                                0:00
+                            </span>
+
+                            <span id="duration">
+                                0:00
+                            </span>
+
+                        </div>
+
+                        <input
+                            id="seek"
+                            class="progress"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0"
+                            step="0.1"
+                            aria-label="Musikposition"
+                        >
+
+                    </div>
+
+
+                    <button
+                        class="volume-button"
+                        id="volume-button"
+                        type="button"
+                        aria-label="Stummschalten"
+                    >
+
+                        <svg
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path d="M4 9v6h4l5 4V5L8 9H4z"></path>
+                            <path
+                                d="M16 9.5a4 4 0 0 1 0 5"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                                stroke-linecap="round"
+                            ></path>
+                        </svg>
+
+                    </button>
+
+                </div>
+
+
+                <div class="volume-area">
+
+                    <input
+                        id="volume"
+                        class="volume-slider"
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.01"
+                        value="0.5"
+                        aria-label="Lautstärke"
+                    >
+
+                </div>
+
+            </div>
+
+            <audio
+                id="audio"
+                preload="metadata"
+            ></audio>
+
+        </section>
+
+
+        <!-- Server -->
+        <section class="section">
+
+            <div class="section-heading">
+
+                <span class="section-line"></span>
+
+                <h2>
+                    Meine Projekte
+                </h2>
+
+                <span class="section-line"></span>
+
+            </div>
+
+
+            <!-- Core3D -->
+            <a
+                href="https://discord.gg/33mb9W3KgB"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="project-card core3d-card"
+            >
+
+                <div class="project-icon core3d-icon">
+                    3D
+                </div>
+
+                <div class="project-info">
+
+                    <div class="project-title-row">
+
+                        <h3>
+                            Core3D
+                        </h3>
+
+                        <span class="status active">
+                            Community
+                        </span>
+
+                    </div>
+
+                    <p>
+                        Alles rund um 3D Design, Modellierung,
+                        eigene Projekte und kreative Ideen.
+                    </p>
+
+                    <span class="project-link">
+                        Discord öffnen
+                        <span>→</span>
+                    </span>
+
+                </div>
+
+            </a>
+
+
+            <!-- EAS -->
+            <div class="project-card eas-card">
+
+                <div class="eas-image">
+
+                    <img
+                        src="assets/images/eas.jpg"
+                        alt="EAS Projekt"
+                    >
+
+                    <div class="eas-overlay"></div>
+
+                    <span class="coming-soon">
+                        COMING SOON
+                    </span>
+
+                </div>
+
+
+                <div class="project-info">
+
+                    <div class="project-title-row">
+
+                        <h3>
+                            EAS
+                        </h3>
+
+                        <span class="status development">
+                            In Entwicklung
+                        </span>
+
+                    </div>
+
+                    <p>
+                        Ein neues Spiel befindet sich aktuell
+                        in Entwicklung und kommt bald.
+                    </p>
+
+                    <span class="project-link disabled">
+                        Spiel in Entwicklung
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Skills -->
+        <section class="section">
+
+            <div class="section-heading">
+
+                <span class="section-line"></span>
+
+                <h2>
+                    Was ich mache
+                </h2>
+
+                <span class="section-line"></span>
+
+            </div>
+
+
+            <div class="skills">
+
+                <div class="skill">
+                    <span class="skill-icon">JS</span>
+                    <span>JavaScript</span>
+                </div>
+
+                <div class="skill">
+                    <span class="skill-icon">PY</span>
+                    <span>Python</span>
+                </div>
+
+                <div class="skill">
+                    <span class="skill-icon">DC</span>
+                    <span>Discord Development</span>
+                </div>
+
+                <div class="skill">
+                    <span class="skill-icon">3D</span>
+                    <span>3D Design</span>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <footer>
+
+            <div class="footer-line"></div>
+
+            <p>
+                © 2026 Tommy
+            </p>
+
+            <span>
+                Made with code & coffee.
+            </span>
+
+        </footer>
+
+    </main>
+
+
+    <script src="index.js"></script>
+
+</body>
+</html>
