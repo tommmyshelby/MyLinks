@@ -11,12 +11,8 @@ const CONFIG = {
         title: 'BURN THE BRIDGE',
         artist: 'NEFFEX',
 
-        /*
-         * Deine hochgeladene WAV-Datei hier ablegen:
-         *
-         * assets/audio/burn-the-bridge.wav
-         */
-        file: 'assets/audio/burn-the-bridge.wav',
+       
+        file: 'assets/audio/burn-the-bridge.mp3',
 
         defaultVolume: 0.5
     }
