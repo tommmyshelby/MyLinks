@@ -3,12 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0d0b0b">
+    <meta name="description" content="Tommy: Links, Discord-Server und Musik.">
 
     <title>Tommy | MyLinks</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&display=swap"
+    >
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/brands.min.css"
     >
 
     <link rel="stylesheet" href="style.css">
@@ -16,172 +24,119 @@
 
 <body>
 
-    <main class="card">
+    <canvas id="background" aria-hidden="true"></canvas>
 
+    <!-- Startbildschirm: Der Klick ist noetig, damit der Browser die Musik abspielen darf -->
+    <button id="enter" class="enter" type="button">
+        <span class="enter-title">Tommy</span>
+        <span class="enter-hint">Zum Betreten klicken</span>
+    </button>
 
-        <div class="avatar">
-            <i class="fa-solid fa-user"></i>
-        </div>
+    <main class="card" id="card">
 
-        <h1>Tommy</h1>
+        <header class="profile">
+            <img
+                class="avatar"
+                src="assets/images/profile.jpg"
+                alt="Profilbild von Tommy"
+                width="112"
+                height="112"
+            >
+            <h1>Tommy</h1>
+            <p class="subline">17 Jahre, Österreich</p>
+        </header>
 
         <p class="bio">
-            Hey, ich bin Tommy, 17 Jahre alt und komme aus Österreich.
-            In meiner Freizeit beschäftige ich mich gerne mit Programmieren,
-            hauptsächlich für mich selbst und im Freundeskreis.
-            Am meisten arbeite ich mit JavaScript und Python und beschäftige
-            mich gerne mit Discord Development.
+            Ich programmiere hauptsächlich für mich selbst und im Freundeskreis,
+            am liebsten mit JavaScript und Python. Ein großer Teil meiner Zeit
+            gehört der Discord-Entwicklung.
         </p>
 
+        <section class="player" aria-label="Musik">
+            <button id="play" class="play" type="button" aria-label="Pause">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path class="icon-pause" d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/>
+                    <path class="icon-play" d="M8 5l11 7-11 7z"/>
+                </svg>
+            </button>
 
-        <!-- Infos -->
-        <div class="info-box">
-
-            <div class="info-item">
-                <span class="info-title">
-                    <i class="fa-solid fa-code"></i>
-                    Sprachen
-                </span>
-
-                <span class="info-value">
-                    JavaScript · Python
-                </span>
+            <div class="player-body">
+                <div class="track">
+                    <span class="track-title" id="track-title">Herr Inspektor</span>
+                    <span class="track-artist" id="track-artist">Seiler und Speer</span>
+                </div>
+                <input
+                    id="seek"
+                    class="range"
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="0.1"
+                    value="0"
+                    aria-label="Position im Lied"
+                >
             </div>
 
-            <div class="info-item">
-                <span class="info-title">
-                    <i class="fa-solid fa-gamepad"></i>
-                    Hobby
+            <input
+                id="volume"
+                class="range volume"
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value="0.5"
+                aria-label="Lautstärke"
+            >
+
+            <audio id="audio" preload="auto" loop></audio>
+        </section>
+
+        <nav class="links" aria-label="Links">
+
+            <h2>Meine Server</h2>
+
+            <a class="link featured" href="https://discord.gg/psWpDMpBX" target="_blank" rel="noopener noreferrer">
+                <i class="fa-brands fa-discord" aria-hidden="true"></i>
+                <span class="link-text">
+                    <strong>Meine Community</strong>
+                    <small>Mein eigener Community-Server</small>
                 </span>
+            </a>
 
-                <span class="info-value">
-                    Discord Development
+            <a class="link" href="https://discord.gg/33mb9W3KgB" target="_blank" rel="noopener noreferrer">
+                <i class="fa-brands fa-discord" aria-hidden="true"></i>
+                <span class="link-text">
+                    <strong>Core3D</strong>
+                    <small>Mein Server und Projekt</small>
                 </span>
-            </div>
+            </a>
 
-            <div class="info-item">
-                <span class="info-title">
-                    <i class="fa-solid fa-location-dot"></i>
-                    Standort
+            <h2>Freunde</h2>
+
+            <a class="link" href="https://discord.gg/KmdpUn3Xad" target="_blank" rel="noopener noreferrer">
+                <i class="fa-brands fa-discord" aria-hidden="true"></i>
+                <span class="link-text">
+                    <strong>Juba Community</strong>
+                    <small>Community von Freunden</small>
                 </span>
+            </a>
 
-                <span class="info-value">
-                    Österreich
+            <h2>Gaming</h2>
+
+            <a class="link" href="https://discord.gg/jcWz7p3KDe" target="_blank" rel="noopener noreferrer">
+                <i class="fa-brands fa-discord" aria-hidden="true"></i>
+                <span class="link-text">
+                    <strong>EAS</strong>
+                    <small>Gaming-Server</small>
                 </span>
-            </div>
+            </a>
 
-        </div>
+        </nav>
 
-
-
-        <div class="category">
-            <i class="fa-solid fa-music"></i>
-            Now Playing
-        </div>
-
-        <div class="spotify">
-            <iframe
-                src="https://open.spotify.com/embed/track/0jgAOQ2Nk6qunsEY6ehNlJ?utm_source=generator&theme=0"
-                width="100%"
-                height="80"
-                frameborder="0"
-                allowfullscreen=""
-                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                loading="lazy">
-            </iframe>
-        </div>
-
-
-
-        <div class="category">
-            <i class="fa-brands fa-discord"></i>
-            Meine Server
-        </div>
-
-        <a
-            class="link-btn main-link"
-            href="https://discord.gg/psWpDMpBX"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-            <i class="fa-brands fa-discord"></i>
-
-            <span>
-                <strong>Meine Community</strong>
-                <small>Mein eigener Community Server</small>
-            </span>
-
-            <i class="fa-solid fa-arrow-up-right-from-square arrow"></i>
-        </a>
-
-        <a
-            class="link-btn"
-            href="https://discord.gg/33mb9W3KgB"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-            <i class="fa-brands fa-discord"></i>
-
-            <span>
-                <strong>Core3D</strong>
-                <small>Mein Server / Projekt</small>
-            </span>
-
-            <i class="fa-solid fa-arrow-up-right-from-square arrow"></i>
-        </a>
-
-
-        <!-- Freunde -->
-        <div class="category">
-            <i class="fa-solid fa-users"></i>
-            Freunde
-        </div>
-
-        <a
-            class="link-btn"
-            href="https://discord.gg/KmdpUn3Xad"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-            <i class="fa-brands fa-discord"></i>
-
-            <span>
-                <strong>Juba Community</strong>
-                <small>Community von Freunden</small>
-            </span>
-
-            <i class="fa-solid fa-arrow-up-right-from-square arrow"></i>
-        </a>
-
-
-        <!-- Gaming -->
-        <div class="category">
-            <i class="fa-solid fa-gamepad"></i>
-            Gaming
-        </div>
-
-        <a
-            class="link-btn"
-            href="https://discord.gg/jcWz7p3KDe"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-            <i class="fa-brands fa-discord"></i>
-
-            <span>
-                <strong>EAS</strong>
-                <small>Gaming Server</small>
-            </span>
-
-            <i class="fa-solid fa-arrow-up-right-from-square arrow"></i>
-        </a>
-
-
-        <footer>
-            © 2026 Tommy
-        </footer>
+        <footer>&copy; 2026 Tommy</footer>
 
     </main>
 
+    <script src="index.js"></script>
 </body>
 </html>
