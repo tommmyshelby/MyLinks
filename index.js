@@ -1,551 +1,185 @@
 'use strict';
 
-
-/* =========================================================
-   KONFIGURATION
-========================================================= */
-
-const CONFIG = {
-
-    music: {
-        title: 'BURN THE BRIDGE',
-        artist: 'NEFFEX',
-
-       
-        file: 'assets/audio/burn-the-bridge.mp3',
-
-        defaultVolume: 0.5
-    }
-
+const music = {
+    title: 'BURN THE BRIDGE',
+    artist: 'NEFFEX',
+    file: 'assets/audio/burn-the-bridge.mp3',
+    defaultVolume: 0.5
 };
-
-
-/* =========================================================
-   ELEMENTE
-========================================================= */
 
 const $ = (id) => document.getElementById(id);
 
-
 const els = {
-
     welcomeScreen: $('welcome-screen'),
     enterButton: $('enter-button'),
-
     audio: $('audio'),
-
     playButton: $('play-button'),
-
     seek: $('seek'),
-
     volume: $('volume'),
     volumeButton: $('volume-button'),
-
     currentTime: $('current-time'),
     duration: $('duration'),
-
     title: $('track-title'),
     artist: $('track-artist')
-
 };
 
-
-/* =========================================================
-   PLAYER STATUS
-========================================================= */
-
-let lastVolume = CONFIG.music.defaultVolume;
-
-
-/* =========================================================
-   ZEIT FORMATIEREN
-========================================================= */
+let lastVolume = music.defaultVolume;
 
 function formatTime(seconds) {
-
     if (!Number.isFinite(seconds)) {
         return '0:00';
     }
 
     const minutes = Math.floor(seconds / 60);
+    const rest = String(Math.floor(seconds % 60)).padStart(2, '0');
 
-    const remainingSeconds =
-        Math.floor(seconds % 60)
-            .toString()
-            .padStart(2, '0');
-
-    return `${minutes}:${remainingSeconds}`;
-
+    return `${minutes}:${rest}`;
 }
 
-
-/* =========================================================
-   RANGE
-========================================================= */
-
-function updateRangeBackground(element) {
-
-    if (!element) {
-        return;
-    }
-
+function updateRange(element) {
     const min = Number(element.min) || 0;
-
     const max = Number(element.max) || 100;
+    const percent = ((Number(element.value) - min) / (max - min)) * 100;
 
-    const value = Number(element.value) || 0;
-
-    const percentage =
-        ((value - min) / (max - min)) * 100;
-
-    element.style.background =
-        `linear-gradient(
-            to right,
-            #a78bfa 0%,
-            #8b5cf6 ${percentage}%,
-            rgba(255,255,255,0.10) ${percentage}%,
-            rgba(255,255,255,0.10) 100%
-        )`;
-
+    element.style.background = `linear-gradient(to right, #a78bfa 0%, #8b5cf6 ${percent}%, rgba(255, 255, 255, 0.1) ${percent}%, rgba(255, 255, 255, 0.1) 100%)`;
 }
-
-
-/* =========================================================
-   LOCAL STORAGE
-========================================================= */
 
 function loadVolume() {
-
     try {
-
-        const saved =
-            localStorage.getItem('tommy-volume');
-
-        if (saved === null) {
-            return CONFIG.music.defaultVolume;
-        }
-
+        const saved = localStorage.getItem('tommy-volume');
         const volume = Number(saved);
 
-        if (
-            Number.isNaN(volume) ||
-            volume < 0 ||
-            volume > 1
-        ) {
-            return CONFIG.music.defaultVolume;
+        if (saved === null || Number.isNaN(volume) || volume < 0 || volume > 1) {
+            return music.defaultVolume;
         }
 
         return volume;
-
     } catch {
-
-        return CONFIG.music.defaultVolume;
-
+        return music.defaultVolume;
     }
-
 }
-
 
 function saveVolume(volume) {
-
     try {
-
-        localStorage.setItem(
-            'tommy-volume',
-            String(volume)
-        );
-
+        localStorage.setItem('tommy-volume', String(volume));
     } catch {
-
-        // LocalStorage kann blockiert sein.
+        return;
     }
-
 }
-
-
-/* =========================================================
-   PLAY BUTTON
-========================================================= */
 
 function updatePlayButton() {
+    const playing = !els.audio.paused;
 
-    const playing =
-        !els.audio.paused;
-
-    els.playButton.classList.toggle(
-        'playing',
-        playing
-    );
-
-    els.playButton.setAttribute(
-        'aria-label',
-        playing
-            ? 'Musik pausieren'
-            : 'Musik abspielen'
-    );
-
+    els.playButton.classList.toggle('playing', playing);
+    els.playButton.setAttribute('aria-label', playing ? 'Musik pausieren' : 'Musik abspielen');
 }
-
-
-/* =========================================================
-   VOLUME ICON
-========================================================= */
 
 function updateVolumeButton() {
+    const muted = els.audio.muted || els.audio.volume === 0;
 
-    const muted =
-        els.audio.muted ||
-        els.audio.volume === 0;
-
-    els.volumeButton.setAttribute(
-        'aria-label',
-        muted
-            ? 'Ton einschalten'
-            : 'Ton ausschalten'
-    );
-
+    els.volumeButton.classList.toggle('muted', muted);
+    els.volumeButton.setAttribute('aria-label', muted ? 'Ton einschalten' : 'Ton ausschalten');
 }
 
+function togglePlay() {
+    if (els.audio.paused) {
+        els.audio.play().catch((error) => console.warn('Audio konnte nicht gestartet werden:', error));
+    } else {
+        els.audio.pause();
+    }
+}
 
-/* =========================================================
-   AUDIO INITIALISIEREN
-========================================================= */
+function toggleMute() {
+    if (els.audio.muted || els.audio.volume === 0) {
+        const restored = lastVolume > 0 ? lastVolume : music.defaultVolume;
 
-function initAudio() {
-
-    els.title.textContent =
-        CONFIG.music.title;
-
-    els.artist.textContent =
-        CONFIG.music.artist;
-
-    els.audio.src =
-        CONFIG.music.file;
-
-    const volume =
-        loadVolume();
-
-    els.audio.volume =
-        volume;
-
-    lastVolume =
-        volume;
-
-    els.volume.value =
-        volume;
-
-    updateRangeBackground(
-        els.volume
-    );
-
-    updatePlayButton();
+        els.audio.muted = false;
+        els.audio.volume = restored;
+        els.volume.value = restored;
+        updateRange(els.volume);
+    } else {
+        lastVolume = els.audio.volume;
+        els.audio.muted = true;
+    }
 
     updateVolumeButton();
-
-
-    /* =========================
-       PLAY
-    ========================= */
-
-    els.playButton.addEventListener(
-        'click',
-        async () => {
-
-            if (els.audio.paused) {
-
-                try {
-
-                    await els.audio.play();
-
-                } catch (error) {
-
-                    console.warn(
-                        'Audio konnte nicht gestartet werden:',
-                        error
-                    );
-
-                }
-
-            } else {
-
-                els.audio.pause();
-
-            }
-
-        }
-    );
-
-
-    /* =========================
-       VOLUME
-    ========================= */
-
-    els.volume.addEventListener(
-        'input',
-        () => {
-
-            const value =
-                Number(els.volume.value);
-
-            els.audio.volume =
-                value;
-
-            els.audio.muted =
-                false;
-
-            lastVolume =
-                value;
-
-            saveVolume(value);
-
-            updateRangeBackground(
-                els.volume
-            );
-
-            updateVolumeButton();
-
-        }
-    );
-
-
-    /* =========================
-       MUTE
-    ========================= */
-
-    els.volumeButton.addEventListener(
-        'click',
-        () => {
-
-            if (
-                els.audio.muted ||
-                els.audio.volume === 0
-            ) {
-
-                els.audio.muted =
-                    false;
-
-                const restore =
-                    lastVolume > 0
-                        ? lastVolume
-                        : 0.5;
-
-                els.audio.volume =
-                    restore;
-
-                els.volume.value =
-                    restore;
-
-                updateRangeBackground(
-                    els.volume
-                );
-
-            } else {
-
-                lastVolume =
-                    els.audio.volume;
-
-                els.audio.muted =
-                    true;
-
-            }
-
-            updateVolumeButton();
-
-        }
-    );
-
-
-    /* =========================
-       SEEK
-    ========================= */
-
-    els.seek.addEventListener(
-        'input',
-        () => {
-
-            if (!els.audio.duration) {
-                return;
-            }
-
-            const percentage =
-                Number(els.seek.value);
-
-            els.audio.currentTime =
-                (
-                    percentage / 100
-                ) *
-                els.audio.duration;
-
-            updateRangeBackground(
-                els.seek
-            );
-
-        }
-    );
-
-
-    /* =========================
-       TIME UPDATE
-    ========================= */
-
-    els.audio.addEventListener(
-        'timeupdate',
-        () => {
-
-            if (!els.audio.duration) {
-                return;
-            }
-
-            const percentage =
-                (
-                    els.audio.currentTime /
-                    els.audio.duration
-                ) * 100;
-
-            els.seek.value =
-                percentage;
-
-            els.currentTime.textContent =
-                formatTime(
-                    els.audio.currentTime
-                );
-
-            updateRangeBackground(
-                els.seek
-            );
-
-        }
-    );
-
-
-    /* =========================
-       METADATEN
-    ========================= */
-
-    els.audio.addEventListener(
-        'loadedmetadata',
-        () => {
-
-            els.duration.textContent =
-                formatTime(
-                    els.audio.duration
-                );
-
-        }
-    );
-
-
-    /* =========================
-       PLAY / PAUSE
-    ========================= */
-
-    els.audio.addEventListener(
-        'play',
-        updatePlayButton
-    );
-
-    els.audio.addEventListener(
-        'pause',
-        updatePlayButton
-    );
-
-
-    /* =========================
-       ENDE
-    ========================= */
-
-    els.audio.addEventListener(
-        'ended',
-        () => {
-
-            els.seek.value = 0;
-
-            els.currentTime.textContent =
-                '0:00';
-
-            updateRangeBackground(
-                els.seek
-            );
-
-            updatePlayButton();
-
-        }
-    );
-
-
-    /* =========================
-       FEHLER
-    ========================= */
-
-    els.audio.addEventListener(
-        'error',
-        () => {
-
-            console.error(
-                'Musikdatei konnte nicht geladen werden:',
-                CONFIG.music.file
-            );
-
-            els.artist.textContent =
-                'Musikdatei nicht gefunden';
-
-        }
-    );
-
 }
 
+function changeVolume() {
+    const value = Number(els.volume.value);
 
-/* =========================================================
-   START SCREEN
-========================================================= */
+    els.audio.volume = value;
+    els.audio.muted = false;
+    lastVolume = value;
+
+    saveVolume(value);
+    updateRange(els.volume);
+    updateVolumeButton();
+}
+
+function seek() {
+    if (!els.audio.duration) {
+        return;
+    }
+
+    els.audio.currentTime = (Number(els.seek.value) / 100) * els.audio.duration;
+    updateRange(els.seek);
+}
+
+function updateProgress() {
+    if (!els.audio.duration) {
+        return;
+    }
+
+    els.seek.value = (els.audio.currentTime / els.audio.duration) * 100;
+    els.currentTime.textContent = formatTime(els.audio.currentTime);
+    updateRange(els.seek);
+}
+
+function initAudio() {
+    const volume = loadVolume();
+
+    els.title.textContent = music.title;
+    els.artist.textContent = music.artist;
+    els.audio.src = music.file;
+    els.audio.volume = volume;
+    els.volume.value = volume;
+    lastVolume = volume;
+
+    updateRange(els.volume);
+    updatePlayButton();
+    updateVolumeButton();
+
+    els.playButton.addEventListener('click', togglePlay);
+    els.volumeButton.addEventListener('click', toggleMute);
+    els.volume.addEventListener('input', changeVolume);
+    els.seek.addEventListener('input', seek);
+
+    els.audio.addEventListener('timeupdate', updateProgress);
+    els.audio.addEventListener('loadedmetadata', () => {
+        els.duration.textContent = formatTime(els.audio.duration);
+    });
+    els.audio.addEventListener('play', updatePlayButton);
+    els.audio.addEventListener('pause', updatePlayButton);
+    els.audio.addEventListener('error', () => {
+        console.error('Musikdatei konnte nicht geladen werden:', music.file);
+        els.artist.textContent = 'Musikdatei nicht gefunden';
+    });
+}
 
 function enterWebsite() {
-
-    document.body.classList.remove(
-        'locked'
-    );
-
-    els.welcomeScreen.classList.add(
-        'hidden'
-    );
-
-
-    /*
-     * Browser erlauben Audio normalerweise erst
-     * nach einer Benutzeraktion.
-     */
-
-    els.audio.play()
-        .catch(() => {
-            // Falls Autoplay blockiert wird,
-            // kann der Nutzer über den Play-Button starten.
-        });
-
+    document.body.classList.remove('locked');
+    els.welcomeScreen.classList.add('hidden');
+    els.audio.play().catch(() => {});
 }
-
-
-/* =========================================================
-   INITIALISIERUNG
-========================================================= */
 
 function init() {
+    document.body.classList.add('locked');
 
-    document.body.classList.add(
-        'locked'
-    );
-
+    lucide.createIcons();
     initAudio();
 
-
-    els.enterButton.addEventListener(
-        'click',
-        enterWebsite,
-        {
-            once: true
-        }
-    );
-
+    els.enterButton.addEventListener('click', enterWebsite, { once: true });
 }
-
 
 init();
