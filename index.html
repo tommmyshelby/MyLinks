@@ -2,114 +2,46 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <meta
-        name="theme-color"
-        content="#08090c"
-    >
-
-    <meta
-        name="description"
-        content="Tommy – Discord Development, JavaScript, Python und Core3D."
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#08090c">
+    <meta name="description" content="Tommy – Discord Development, JavaScript, Python und Core3D.">
     <title>Tommy — Links</title>
-
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    >
-
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet"
-    >
-
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-
-
-    <div
-        class="background"
-        aria-hidden="true"
-    >
+    <div class="background" aria-hidden="true">
         <div class="background-glow glow-one"></div>
         <div class="background-glow glow-two"></div>
         <div class="background-grid"></div>
     </div>
 
-
-    <div
-        class="welcome-screen"
-        id="welcome-screen"
-    >
+    <div class="welcome-screen" id="welcome-screen">
         <div class="welcome-content">
-
-            <div class="welcome-logo">
-                T
-            </div>
-
-            <h1>
-                Willkommen
-            </h1>
-
-            <p>
-                Klicke zum Betreten
-            </p>
-
-            <button
-                class="enter-button"
-                id="enter-button"
-                type="button"
-            >
+            <div class="welcome-logo">T</div>
+            <h1>Willkommen</h1>
+            <p>Klicke zum Betreten</p>
+            <button class="enter-button" id="enter-button" type="button">
                 Seite betreten
-                <span>→</span>
+                <i data-lucide="arrow-right"></i>
             </button>
-
         </div>
     </div>
 
-
-
     <main class="page">
-
-
-
         <section class="profile">
-
             <div class="profile-image-wrapper">
-
-                <img
-                    src="assets/images/profile.jpg"
-                    alt="Tommy"
-                    class="profile-image"
-                >
-
+                <img src="assets/images/profile.jpg" alt="Tommy" class="profile-image">
                 <span class="online-dot"></span>
-
             </div>
 
-            <h1>
-                Tommy
-            </h1>
+            <h1>Tommy</h1>
 
             <p class="profile-location">
+                <i data-lucide="map-pin"></i>
                 17 Jahre · Österreich
             </p>
 
@@ -119,48 +51,23 @@
                 Nebenbei arbeite ich an eigenen Projekten und probiere
                 gerne neue Dinge aus.
             </p>
-
         </section>
 
-
-
         <section class="music-card">
-
             <div class="music-cover">
-
                 <div class="music-cover-overlay"></div>
-
                 <div class="music-cover-text">
                     <span>NEFFEX</span>
-
-                    <strong>
-                        BURN
-                        <br>
-                        THE BRIDGE
-                    </strong>
+                    <strong>BURN<br>THE BRIDGE</strong>
                 </div>
-
             </div>
 
-
             <div class="music-content">
-
                 <div class="music-top">
-
                     <div>
-
-                        <span class="music-label">
-                            NOW PLAYING
-                        </span>
-
-                        <h2 id="track-title">
-                            BURN THE BRIDGE
-                        </h2>
-
-                        <p id="track-artist">
-                            NEFFEX
-                        </p>
-
+                        <span class="music-label">NOW PLAYING</span>
+                        <h2 id="track-title">BURN THE BRIDGE</h2>
+                        <p id="track-artist">NEFFEX</p>
                     </div>
 
                     <a
@@ -171,54 +78,21 @@
                         aria-label="NEFFEX auf SoundCloud öffnen"
                     >
                         SoundCloud
+                        <i data-lucide="external-link"></i>
                     </a>
-
                 </div>
 
-
                 <div class="music-controls">
-
-                    <button
-                        class="play-button"
-                        id="play-button"
-                        type="button"
-                        aria-label="Musik abspielen"
-                    >
-
-                        <svg
-                            class="play-icon"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
-                            <path d="M8 5v14l11-7z"></path>
-                        </svg>
-
-                        <svg
-                            class="pause-icon"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
-                            <path d="M7 5h4v14H7z"></path>
-                            <path d="M13 5h4v14h-4z"></path>
-                        </svg>
-
+                    <button class="play-button" id="play-button" type="button" aria-label="Musik abspielen">
+                        <i data-lucide="play" class="play-icon"></i>
+                        <i data-lucide="pause" class="pause-icon"></i>
                     </button>
 
-
                     <div class="music-progress-area">
-
                         <div class="music-time">
-
-                            <span id="current-time">
-                                0:00
-                            </span>
-
-                            <span id="duration">
-                                0:00
-                            </span>
-
+                            <span id="current-time">0:00</span>
+                            <span id="duration">0:00</span>
                         </div>
-
                         <input
                             id="seek"
                             class="progress"
@@ -229,39 +103,15 @@
                             step="0.1"
                             aria-label="Musikposition"
                         >
-
                     </div>
 
-
-                    <button
-                        class="volume-button"
-                        id="volume-button"
-                        type="button"
-                        aria-label="Stummschalten"
-                    >
-
-                        <svg
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
-                            <path d="M4 9v6h4l5 4V5L8 9H4z"></path>
-
-                            <path
-                                d="M16 9.5a4 4 0 0 1 0 5"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="1.7"
-                                stroke-linecap="round"
-                            ></path>
-                        </svg>
-
+                    <button class="volume-button" id="volume-button" type="button" aria-label="Ton ausschalten">
+                        <i data-lucide="volume-2" class="volume-on-icon"></i>
+                        <i data-lucide="volume-x" class="volume-off-icon"></i>
                     </button>
-
                 </div>
 
-
                 <div class="volume-area">
-
                     <input
                         id="volume"
                         class="volume-slider"
@@ -272,261 +122,142 @@
                         value="0.5"
                         aria-label="Lautstärke"
                     >
-
                 </div>
-
             </div>
 
-
-            <audio
-                id="audio"
-                preload="metadata"
-            ></audio>
-
+            <audio id="audio" preload="metadata" loop></audio>
         </section>
 
-
         <section class="section">
-
             <div class="section-heading">
-
                 <span class="section-line"></span>
-
-                <h2>
-                    Meine Projekte
-                </h2>
-
+                <h2>Meine Projekte</h2>
                 <span class="section-line"></span>
-
             </div>
 
+            <div class="project-card">
+                <div class="project-icon">
+                    <i data-lucide="box"></i>
+                </div>
 
-    
+                <div class="project-info">
+                    <div class="project-title-row">
+                        <h3>Core3D</h3>
+                        <span class="status active">Community</span>
+                    </div>
+
+                    <p>
+                        Ein Server rund um 3D Design und 3D-Druck, den ich mit
+                        einem Freund betreibe. Ich leite die Community, die
+                        3D-Arbeit übernimmt mein Kumpel.
+                    </p>
+
+                    <div class="project-tags">
+                        <span class="project-tag">3D-Druck</span>
+                        <span class="project-tag">Community</span>
+                        <span class="project-tag">Leitung</span>
+                    </div>
+
+                    <div class="project-links">
+                        <a
+                            class="project-link"
+                            href="https://discord.gg/33mb9W3KgB"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Discord öffnen
+                            <i data-lucide="arrow-right"></i>
+                        </a>
+
+                        <a
+                            class="project-link"
+                            href="https://www.youtube.com/@Core3D_Print"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <i data-lucide="youtube"></i>
+                            YouTube
+                        </a>
+                    </div>
+                </div>
+            </div>
 
             <a
-                href="https://discord.gg/33mb9W3KgB"
+                class="project-card eas-card"
+                href="https://discord.gg/pQCr73nwWY"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="project-card core3d-card"
             >
-
-                <div class="project-icon core3d-icon">
-                    3D
+                <div class="eas-image">
+                    <img src="assets/images/eas.jpg" alt="EAS Projekt">
+                    <div class="eas-overlay"></div>
+                    <span class="coming-soon">COMING SOON</span>
                 </div>
 
-
                 <div class="project-info">
-
                     <div class="project-title-row">
-
-                        <h3>
-                            Core3D
-                        </h3>
-
-                        <span class="status active">
-                            Community
-                        </span>
-
+                        <h3>EAS</h3>
+                        <span class="status development">Im Team</span>
                     </div>
-
 
                     <p>
-                        Alles rund um 3D Design, Modellierung,
-                        eigene Projekte und kreative Ideen.
+                        Ein Roleplay-Projekt, bei dem ich Teil des Teams bin.
+                        Gebaut wird von anderen, dem Discord kannst du aber
+                        schon beitreten.
                     </p>
 
-
                     <div class="project-tags">
-
-                        <span class="project-tag">
-                            3D Gestaltung
-                        </span>
-
-                        <span class="project-tag">
-                            3D
-                        </span>
-
-                        <span class="project-tag">
-                            Produktion
-                        </span>
-
+                        <span class="project-tag">Roleplay</span>
+                        <span class="project-tag">V2</span>
+                        <span class="project-tag">Team</span>
                     </div>
-
 
                     <span class="project-link">
-                        Discord öffnen
-                        <span>→</span>
+                        Discord beitreten
+                        <i data-lucide="arrow-right"></i>
                     </span>
-
                 </div>
-
             </a>
-
-
-
-
-            <div class="project-card eas-card">
-
-                <div class="eas-image">
-
-                    <img
-                        src="assets/images/eas.jpg"
-                        alt="EAS Projekt"
-                    >
-
-                    <div class="eas-overlay"></div>
-
-                    <span class="coming-soon">
-                        COMING SOON
-                    </span>
-
-                </div>
-
-
-                <div class="project-info">
-
-                    <div class="project-title-row">
-
-                        <h3>
-                            EAS
-                        </h3>
-
-                        <span class="status development">
-                            Im Team
-                        </span>
-
-                    </div>
-
-
-                    <p>
-                        Ein Roleplay-Projekt, an dessen Entwicklung
-                        ich gemeinsam mit dem Team arbeite.
-                    </p>
-
-
-                    <div class="project-tags">
-
-                        <span class="project-tag">
-                            Roleplay
-                        </span>
-
-                        <span class="project-tag">
-                            V2
-                        </span>
-
-                        <span class="project-tag">
-                            Entwicklung
-                        </span>
-
-                    </div>
-
-
-                    <span class="project-link disabled">
-                        Spiel in Entwicklung
-                    </span>
-
-                </div>
-
-            </div>
-
         </section>
-
-
 
         <section class="section">
-
             <div class="section-heading">
-
                 <span class="section-line"></span>
-
-                <h2>
-                    Was ich mache
-                </h2>
-
+                <h2>Was ich mache</h2>
                 <span class="section-line"></span>
-
             </div>
-
 
             <div class="skills">
-
                 <div class="skill">
-
-                    <span class="skill-icon">
-                        JS
-                    </span>
-
-                    <span>
-                        JavaScript
-                    </span>
-
+                    <span class="skill-icon"><i data-lucide="braces"></i></span>
+                    <span>JavaScript</span>
                 </div>
 
-
                 <div class="skill">
-
-                    <span class="skill-icon">
-                        PY
-                    </span>
-
-                    <span>
-                        Python
-                    </span>
-
+                    <span class="skill-icon"><i data-lucide="terminal"></i></span>
+                    <span>Python</span>
                 </div>
 
-
                 <div class="skill">
-
-                    <span class="skill-icon">
-                        DC
-                    </span>
-
-                    <span>
-                        Discord Development
-                    </span>
-
+                    <span class="skill-icon"><i data-lucide="bot"></i></span>
+                    <span>Discord Development</span>
                 </div>
 
-
                 <div class="skill">
-
-                    <span class="skill-icon">
-                        3D
-                    </span>
-
-                    <span>
-                        3D Design
-                    </span>
-
+                    <span class="skill-icon"><i data-lucide="gamepad-2"></i></span>
+                    <span>Zocken</span>
                 </div>
-
             </div>
-
         </section>
 
-
-   
-
         <footer>
-
             <div class="footer-line"></div>
-
-            <p>
-                © 2026 Tommy
-            </p>
-
-            <span>
-                Made with code & coffee.
-            </span>
-
+            <p>© 2026 Tommy</p>
+            <span>Made with code & coffee.</span>
         </footer>
-
     </main>
 
-
-
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="index.js"></script>
-
 </body>
 </html>
