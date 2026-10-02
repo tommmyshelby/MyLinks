@@ -7,6 +7,83 @@ const music = {
     defaultVolume: 0.5
 };
 
+const translations = {
+    de: {
+        langAria: 'Sprache wechseln',
+        themeAria: 'Hell/Dunkel wechseln',
+        welcomeTitle: 'Willkommen',
+        welcomeText: 'Klicke zum Betreten',
+        enter: 'Seite betreten',
+        location: '17 Jahre · Österreich',
+        bio: 'Ich programmiere gerne und beschäftige mich hauptsächlich mit Discord Development, JavaScript und Python. Nebenbei arbeite ich an eigenen Projekten und probiere gerne neue Dinge aus.',
+        statusAria: 'Statusseite',
+        discordProfileAria: 'Discord Profil',
+        soundcloudAria: 'NEFFEX auf SoundCloud öffnen',
+        nowPlaying: 'NOW PLAYING',
+        seekAria: 'Musikposition',
+        volumeAria: 'Lautstärke',
+        play: 'Musik abspielen',
+        pause: 'Musik pausieren',
+        muteOn: 'Ton ausschalten',
+        muteOff: 'Ton einschalten',
+        musicMissing: 'Musikdatei nicht gefunden',
+        sectionProjects: 'Meine Projekte',
+        sectionGaming: 'Gaming',
+        sectionHosting: 'Hosting',
+        sectionSkills: 'Was ich mache',
+        statusCommunity: 'Community',
+        statusTeam: 'Im Team',
+        statusHost: 'Hoster',
+        coreText: 'Ein Server rund um 3D Design und 3D-Druck, den ich mit einem Freund betreibe. Ich leite die Community, die 3D-Arbeit übernimmt mein Kumpel.',
+        tag3d: '3D-Druck',
+        tagCommunity: 'Community',
+        tagLead: 'Leitung',
+        easText: 'Ein Roleplay-Projekt, bei dem ich Teil des Teams bin. Gebaut wird von anderen, dem Discord kannst du aber schon beitreten.',
+        serverixText: 'Hier hoste ich meine Discord Bots. Du kannst dem Discord von Serverix beitreten.',
+        openDiscord: 'Discord öffnen',
+        joinDiscord: 'Discord beitreten',
+        skillGaming: 'Zocken',
+        footerText: 'Made with code & coffee.'
+    },
+    en: {
+        langAria: 'Change language',
+        themeAria: 'Toggle light/dark mode',
+        welcomeTitle: 'Welcome',
+        welcomeText: 'Click to enter',
+        enter: 'Enter site',
+        location: '17 years old · Austria',
+        bio: 'I love to code and mainly work with Discord development, JavaScript and Python. On the side I build my own projects and enjoy trying out new things.',
+        statusAria: 'Status page',
+        discordProfileAria: 'Discord profile',
+        soundcloudAria: 'Open NEFFEX on SoundCloud',
+        nowPlaying: 'NOW PLAYING',
+        seekAria: 'Music position',
+        volumeAria: 'Volume',
+        play: 'Play music',
+        pause: 'Pause music',
+        muteOn: 'Mute',
+        muteOff: 'Unmute',
+        musicMissing: 'Music file not found',
+        sectionProjects: 'My projects',
+        sectionGaming: 'Gaming',
+        sectionHosting: 'Hosting',
+        sectionSkills: 'What I do',
+        statusCommunity: 'Community',
+        statusTeam: 'In the team',
+        statusHost: 'Host',
+        coreText: 'A server about 3D design and 3D printing that I run together with a friend. I lead the community, my buddy takes care of the 3D work.',
+        tag3d: '3D printing',
+        tagCommunity: 'Community',
+        tagLead: 'Leadership',
+        easText: 'A roleplay project where I am part of the team. Others do the building, but you can already join the Discord.',
+        serverixText: 'This is where I host my Discord bots. You can join the Serverix Discord.',
+        openDiscord: 'Open Discord',
+        joinDiscord: 'Join Discord',
+        skillGaming: 'Gaming',
+        footerText: 'Made with code & coffee.'
+    }
+};
+
 const $ = (id) => document.getElementById(id);
 
 const els = {
@@ -20,10 +97,90 @@ const els = {
     currentTime: $('current-time'),
     duration: $('duration'),
     title: $('track-title'),
-    artist: $('track-artist')
+    artist: $('track-artist'),
+    langButton: $('lang-button'),
+    themeButton: $('theme-button')
 };
 
+const root = document.documentElement;
+
 let lastVolume = music.defaultVolume;
+let audioError = false;
+let currentLang = root.getAttribute('lang') === 'en' ? 'en' : 'de';
+
+function t(key) {
+    return translations[currentLang][key] ?? translations.de[key] ?? key;
+}
+
+function readStorage(key) {
+    try {
+        return localStorage.getItem(key);
+    } catch {
+        return null;
+    }
+}
+
+function writeStorage(key, value) {
+    try {
+        localStorage.setItem(key, value);
+    } catch {
+        return;
+    }
+}
+
+
+function applyLanguage(lang) {
+    currentLang = lang === 'en' ? 'en' : 'de';
+    root.setAttribute('lang', currentLang);
+
+    document.querySelectorAll('[data-i18n]').forEach((el) => {
+        el.textContent = t(el.dataset.i18n);
+    });
+
+    document.querySelectorAll('[data-i18n-aria]').forEach((el) => {
+        el.setAttribute('aria-label', t(el.dataset.i18nAria));
+    });
+
+    document.querySelectorAll('[data-i18n-title]').forEach((el) => {
+        el.setAttribute('title', t(el.dataset.i18nTitle));
+    });
+
+    document.querySelectorAll('[data-lang-option]').forEach((el) => {
+        el.classList.toggle('active', el.dataset.langOption === currentLang);
+    });
+
+    els.artist.textContent = audioError ? t('musicMissing') : music.artist;
+
+    updatePlayButton();
+    updateVolumeButton();
+}
+
+function toggleLanguage() {
+    const next = currentLang === 'de' ? 'en' : 'de';
+
+    writeStorage('tommy-lang', next);
+    applyLanguage(next);
+}
+
+
+function applyTheme(theme) {
+    const value = theme === 'light' ? 'light' : 'dark';
+    const meta = document.querySelector('meta[name="theme-color"]');
+
+    root.setAttribute('data-theme', value);
+
+    if (meta) {
+        meta.setAttribute('content', value === 'light' ? '#f4f3fa' : '#08090c');
+    }
+}
+
+function toggleTheme() {
+    const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+
+    writeStorage('tommy-theme', next);
+    applyTheme(next);
+}
+
 
 function formatTime(seconds) {
     if (!Number.isFinite(seconds)) {
@@ -41,48 +198,41 @@ function updateRange(element) {
     const max = Number(element.max) || 100;
     const percent = ((Number(element.value) - min) / (max - min)) * 100;
 
-    element.style.background = `linear-gradient(to right, #a78bfa 0%, #8b5cf6 ${percent}%, rgba(255, 255, 255, 0.1) ${percent}%, rgba(255, 255, 255, 0.1) 100%)`;
+    element.style.background = `linear-gradient(to right, #a78bfa 0%, #8b5cf6 ${percent}%, var(--track) ${percent}%, var(--track) 100%)`;
 }
 
 function loadVolume() {
-    try {
-        const saved = localStorage.getItem('tommy-volume');
-        const volume = Number(saved);
+    const saved = readStorage('tommy-volume');
+    const volume = Number(saved);
 
-        if (saved === null || Number.isNaN(volume) || volume < 0 || volume > 1) {
-            return music.defaultVolume;
-        }
-
-        return volume;
-    } catch {
+    if (saved === null || Number.isNaN(volume) || volume < 0 || volume > 1) {
         return music.defaultVolume;
     }
+
+    return volume;
 }
 
 function saveVolume(volume) {
-    try {
-        localStorage.setItem('tommy-volume', String(volume));
-    } catch {
-        return;
-    }
+    writeStorage('tommy-volume', String(volume));
 }
 
 function updatePlayButton() {
     const playing = !els.audio.paused;
 
     els.playButton.classList.toggle('playing', playing);
-    els.playButton.setAttribute('aria-label', playing ? 'Musik pausieren' : 'Musik abspielen');
+    els.playButton.setAttribute('aria-label', playing ? t('pause') : t('play'));
 }
 
 function updateVolumeButton() {
     const muted = els.audio.muted || els.audio.volume === 0;
 
     els.volumeButton.classList.toggle('muted', muted);
-    els.volumeButton.setAttribute('aria-label', muted ? 'Ton einschalten' : 'Ton ausschalten');
+    els.volumeButton.setAttribute('aria-label', muted ? t('muteOff') : t('muteOn'));
 }
 
 function togglePlay() {
     if (els.audio.paused) {
+        setupAnalyser();
         els.audio.play().catch((error) => console.warn('Audio konnte nicht gestartet werden:', error));
     } else {
         els.audio.pause();
@@ -136,11 +286,108 @@ function updateProgress() {
     updateRange(els.seek);
 }
 
+
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+let audioContext = null;
+let analyser = null;
+let freqData = null;
+let rafId = null;
+let bass = 0;
+let mid = 0;
+
+function setupAnalyser() {
+    if (reducedMotion) {
+        return;
+    }
+
+    if (!audioContext) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+
+        if (!AudioCtx) {
+            return;
+        }
+
+        try {
+            audioContext = new AudioCtx();
+
+            const source = audioContext.createMediaElementSource(els.audio);
+
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 512;
+            analyser.smoothingTimeConstant = 0.75;
+
+            source.connect(analyser);
+            analyser.connect(audioContext.destination);
+
+            freqData = new Uint8Array(analyser.frequencyBinCount);
+        } catch (error) {
+            console.warn('Audio-Analyse nicht verfügbar:', error);
+            audioContext = null;
+            analyser = null;
+            return;
+        }
+    }
+
+    if (audioContext.state === 'suspended') {
+        audioContext.resume().catch(() => {});
+    }
+}
+
+function average(data, from, to) {
+    let sum = 0;
+
+    for (let i = from; i <= to; i++) {
+        sum += data[i];
+    }
+
+    return sum / (to - from + 1) / 255;
+}
+
+function visualize() {
+    let targetBass = 0;
+    let targetMid = 0;
+
+    if (analyser && !els.audio.paused) {
+        analyser.getByteFrequencyData(freqData);
+
+     
+        const rawBass = average(freqData, 0, 2);
+        const rawMid = average(freqData, 4, 24);
+
+      
+        targetBass = Math.min(1, Math.max(0, (rawBass - 0.45) / 0.45));
+        targetMid = Math.min(1, Math.max(0, (rawMid - 0.3) / 0.5));
+    }
+
+   
+    bass = targetBass > bass ? targetBass : bass * 0.9;
+    mid = targetMid > mid ? targetMid : mid * 0.92;
+
+    root.style.setProperty('--bass', bass.toFixed(3));
+    root.style.setProperty('--mid', mid.toFixed(3));
+
+    if (els.audio.paused && bass < 0.005 && mid < 0.005) {
+        root.style.setProperty('--bass', '0');
+        root.style.setProperty('--mid', '0');
+        rafId = null;
+        return;
+    }
+
+    rafId = requestAnimationFrame(visualize);
+}
+
+function startVisualizer() {
+    if (rafId === null && analyser) {
+        rafId = requestAnimationFrame(visualize);
+    }
+}
+
+
 function initAudio() {
     const volume = loadVolume();
 
     els.title.textContent = music.title;
-    els.artist.textContent = music.artist;
     els.audio.src = music.file;
     els.audio.volume = volume;
     els.volume.value = volume;
@@ -159,17 +406,23 @@ function initAudio() {
     els.audio.addEventListener('loadedmetadata', () => {
         els.duration.textContent = formatTime(els.audio.duration);
     });
-    els.audio.addEventListener('play', updatePlayButton);
+    els.audio.addEventListener('play', () => {
+        updatePlayButton();
+        startVisualizer();
+    });
     els.audio.addEventListener('pause', updatePlayButton);
     els.audio.addEventListener('error', () => {
         console.error('Musikdatei konnte nicht geladen werden:', music.file);
-        els.artist.textContent = 'Musikdatei nicht gefunden';
+        audioError = true;
+        els.artist.textContent = t('musicMissing');
     });
 }
 
 function enterWebsite() {
     document.body.classList.remove('locked');
     els.welcomeScreen.classList.add('hidden');
+
+    setupAnalyser();
     els.audio.play().catch(() => {});
 }
 
@@ -177,8 +430,13 @@ function init() {
     document.body.classList.add('locked');
 
     lucide.createIcons();
-    initAudio();
 
+    applyTheme(root.getAttribute('data-theme'));
+    initAudio();
+    applyLanguage(currentLang);
+
+    els.langButton.addEventListener('click', toggleLanguage);
+    els.themeButton.addEventListener('click', toggleTheme);
     els.enterButton.addEventListener('click', enterWebsite, { once: true });
 }
 
