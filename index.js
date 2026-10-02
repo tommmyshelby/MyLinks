@@ -7,6 +7,7 @@ const music = {
     defaultVolume: 0.5
 };
 
+
 const translations = {
     de: {
         langAria: 'Sprache wechseln',
@@ -286,8 +287,10 @@ function updateProgress() {
     updateRange(els.seek);
 }
 
+const ENABLE_VISUALIZER = true;
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const backgroundEl = document.querySelector('.background');
 
 let audioContext = null;
 let analyser = null;
@@ -295,9 +298,15 @@ let freqData = null;
 let rafId = null;
 let bass = 0;
 let mid = 0;
+let lastBass = -1;
+let lastMid = -1;
+let lastFrame = 0;
+let startedAt = 0;
+let slowFrames = 0;
+let visualizerOff = !ENABLE_VISUALIZER || reducedMotion;
 
 function setupAnalyser() {
-    if (reducedMotion) {
+    if (visualizerOff) {
         return;
     }
 
@@ -314,8 +323,8 @@ function setupAnalyser() {
             const source = audioContext.createMediaElementSource(els.audio);
 
             analyser = audioContext.createAnalyser();
-            analyser.fftSize = 512;
-            analyser.smoothingTimeConstant = 0.75;
+            analyser.fftSize = 256;
+            analyser.smoothingTimeConstant = 0.7;
 
             source.connect(analyser);
             analyser.connect(audioContext.destination);
@@ -344,32 +353,80 @@ function average(data, from, to) {
     return sum / (to - from + 1) / 255;
 }
 
-function visualize() {
+function setLevels(bassValue, midValue) {
+
+    if (Math.abs(bassValue - lastBass) > 0.01) {
+        backgroundEl.style.setProperty('--bass', bassValue.toFixed(2));
+        lastBass = bassValue;
+    }
+
+    if (Math.abs(midValue - lastMid) > 0.01) {
+        backgroundEl.style.setProperty('--mid', midValue.toFixed(2));
+        lastMid = midValue;
+    }
+}
+
+
+function checkPerformance(now) {
+    if (!startedAt) {
+        startedAt = now;
+    }
+
+    if (lastFrame && now - startedAt > 2000) {
+        const delta = now - lastFrame;
+
+        slowFrames = delta > 40 ? slowFrames + 1 : Math.max(0, slowFrames - 1);
+
+        if (slowFrames > 45) {
+            visualizerOff = true;
+            bass = 0;
+            mid = 0;
+            lastBass = -1;
+            lastMid = -1;
+            setLevels(0, 0);
+            console.info('Farbanimation wegen niedriger FPS ausgeschaltet.');
+            return false;
+        }
+    }
+
+    lastFrame = now;
+    return true;
+}
+
+function visualize(now) {
+    if (visualizerOff) {
+        rafId = null;
+        return;
+    }
+
+    if (!checkPerformance(now)) {
+        rafId = null;
+        return;
+    }
+
     let targetBass = 0;
     let targetMid = 0;
 
     if (analyser && !els.audio.paused) {
         analyser.getByteFrequencyData(freqData);
 
-     
-        const rawBass = average(freqData, 0, 2);
-        const rawMid = average(freqData, 4, 24);
 
-      
+        const rawBass = average(freqData, 0, 1);
+        const rawMid = average(freqData, 3, 14);
+
+
         targetBass = Math.min(1, Math.max(0, (rawBass - 0.45) / 0.45));
         targetMid = Math.min(1, Math.max(0, (rawMid - 0.3) / 0.5));
     }
 
-   
+  
     bass = targetBass > bass ? targetBass : bass * 0.9;
     mid = targetMid > mid ? targetMid : mid * 0.92;
 
-    root.style.setProperty('--bass', bass.toFixed(3));
-    root.style.setProperty('--mid', mid.toFixed(3));
+    setLevels(bass, mid);
 
-    if (els.audio.paused && bass < 0.005 && mid < 0.005) {
-        root.style.setProperty('--bass', '0');
-        root.style.setProperty('--mid', '0');
+    if (els.audio.paused && bass < 0.01 && mid < 0.01) {
+        setLevels(0, 0);
         rafId = null;
         return;
     }
@@ -378,10 +435,17 @@ function visualize() {
 }
 
 function startVisualizer() {
-    if (rafId === null && analyser) {
+    if (!visualizerOff && rafId === null && analyser) {
+        lastFrame = 0;
         rafId = requestAnimationFrame(visualize);
     }
 }
+
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && !els.audio.paused) {
+        startVisualizer();
+    }
+});
 
 
 function initAudio() {
