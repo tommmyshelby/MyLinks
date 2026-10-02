@@ -1,11 +1,28 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#08090c">
     <meta name="description" content="Tommy – Discord Development, JavaScript, Python und Core3D.">
     <title>Tommy — Links</title>
+
+    <!-- Theme + Sprache sofort setzen, damit nichts flackert -->
+    <script>
+        (function () {
+            try {
+                var theme = localStorage.getItem('tommy-theme');
+                var lang = localStorage.getItem('tommy-lang');
+                if (theme === 'light' || theme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', theme);
+                }
+                if (lang === 'de' || lang === 'en') {
+                    document.documentElement.setAttribute('lang', lang);
+                }
+            } catch (e) {}
+        })();
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -16,23 +33,42 @@
     <div class="background" aria-hidden="true">
         <div class="background-glow glow-one"></div>
         <div class="background-glow glow-two"></div>
+        <div class="background-glow glow-three"></div>
         <div class="background-grid"></div>
+    </div>
+
+    <!-- Obere Buttons: Sprache + Hell/Dunkel -->
+    <div class="topbar">
+        <button class="top-button" id="lang-button" type="button" data-i18n-aria="langAria" data-i18n-title="langAria">
+            <i data-lucide="languages"></i>
+            <span class="lang-switch">
+                <span class="lang-option" data-lang-option="de">DE</span>
+                <span class="lang-sep">/</span>
+                <span class="lang-option" data-lang-option="en">EN</span>
+            </span>
+        </button>
+
+        <button class="top-button icon-only" id="theme-button" type="button" data-i18n-aria="themeAria" data-i18n-title="themeAria">
+            <i data-lucide="sun" class="theme-sun"></i>
+            <i data-lucide="moon" class="theme-moon"></i>
+        </button>
     </div>
 
     <div class="welcome-screen" id="welcome-screen">
         <div class="welcome-content">
             <div class="welcome-logo">T</div>
-            <h1>Willkommen</h1>
-            <p>Klicke zum Betreten</p>
+            <h1 data-i18n="welcomeTitle">Willkommen</h1>
+            <p data-i18n="welcomeText">Klicke zum Betreten</p>
             <button class="enter-button" id="enter-button" type="button">
-                Seite betreten
+                <span data-i18n="enter">Seite betreten</span>
                 <i data-lucide="arrow-right"></i>
             </button>
         </div>
     </div>
 
     <main class="page">
-        <section class="profile">
+        <!-- Profil -->
+        <section class="card profile">
             <div class="profile-image-wrapper">
                 <img src="assets/images/profile.jpg" alt="Tommy" class="profile-image">
                 <span class="online-dot"></span>
@@ -42,10 +78,10 @@
 
             <p class="profile-location">
                 <i data-lucide="map-pin"></i>
-                17 Jahre · Österreich
+                <span data-i18n="location">17 Jahre · Österreich</span>
             </p>
 
-            <p class="bio">
+            <p class="bio" data-i18n="bio">
                 Ich programmiere gerne und beschäftige mich hauptsächlich
                 mit Discord Development, JavaScript und Python.
                 Nebenbei arbeite ich an eigenen Projekten und probiere
@@ -58,8 +94,8 @@
                     href="https://systemy.betteruptime.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label="Statusseite"
-                    title="Statusseite"
+                    data-i18n-aria="statusAria"
+                    data-i18n-title="statusAria"
                 >
                     <i data-lucide="activity"></i>
                 </a>
@@ -69,15 +105,16 @@
                     href="https://discord.com/users/881206091009122406"
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label="Discord Profil"
-                    title="Discord Profil"
+                    data-i18n-aria="discordProfileAria"
+                    data-i18n-title="discordProfileAria"
                 >
                     <i data-lucide="message-circle"></i>
                 </a>
             </div>
         </section>
 
-        <section class="music-card">
+        <!-- Musik -->
+        <section class="card music-card">
             <div class="music-cover">
                 <div class="music-cover-overlay"></div>
                 <div class="music-cover-text">
@@ -89,7 +126,7 @@
             <div class="music-content">
                 <div class="music-top">
                     <div>
-                        <span class="music-label">NOW PLAYING</span>
+                        <span class="music-label" data-i18n="nowPlaying">NOW PLAYING</span>
                         <h2 id="track-title">BURN THE BRIDGE</h2>
                         <p id="track-artist">NEFFEX</p>
                     </div>
@@ -99,7 +136,7 @@
                         href="https://soundcloud.com/neffexmusic/burn-the-bridge-copyright-free"
                         target="_blank"
                         rel="noopener noreferrer"
-                        aria-label="NEFFEX auf SoundCloud öffnen"
+                        data-i18n-aria="soundcloudAria"
                     >
                         SoundCloud
                         <i data-lucide="external-link"></i>
@@ -125,7 +162,7 @@
                             max="100"
                             value="0"
                             step="0.1"
-                            aria-label="Musikposition"
+                            data-i18n-aria="seekAria"
                         >
                     </div>
 
@@ -144,7 +181,7 @@
                         max="1"
                         step="0.01"
                         value="0.5"
-                        aria-label="Lautstärke"
+                        data-i18n-aria="volumeAria"
                     >
                 </div>
             </div>
@@ -152,32 +189,36 @@
             <audio id="audio" preload="metadata" loop></audio>
         </section>
 
+        <!-- Projekte -->
         <section class="section">
             <div class="section-heading">
                 <span class="section-line"></span>
-                <h2>Meine Projekte</h2>
+                <h2 data-i18n="sectionProjects">Meine Projekte</h2>
                 <span class="section-line"></span>
             </div>
 
-            <div class="project-card">
-                <img src="assets/images/coreprofilbild.jpg" alt="Core3D" class="project-avatar">
+            <article class="card project-card">
+                <div class="card-media">
+                    <img src="assets/images/coreprofilbild.jpg" alt="Core3D">
+                    <div class="card-media-overlay"></div>
+                </div>
 
-                <div class="project-info">
+                <div class="card-body">
                     <div class="project-title-row">
                         <h3>Core3D</h3>
-                        <span class="status active">Community</span>
+                        <span class="status active" data-i18n="statusCommunity">Community</span>
                     </div>
 
-                    <p>
+                    <p data-i18n="coreText">
                         Ein Server rund um 3D Design und 3D-Druck, den ich mit
                         einem Freund betreibe. Ich leite die Community, die
                         3D-Arbeit übernimmt mein Kumpel.
                     </p>
 
                     <div class="project-tags">
-                        <span class="project-tag">3D-Druck</span>
-                        <span class="project-tag">Community</span>
-                        <span class="project-tag">Leitung</span>
+                        <span class="project-tag" data-i18n="tag3d">3D-Druck</span>
+                        <span class="project-tag" data-i18n="tagCommunity">Community</span>
+                        <span class="project-tag" data-i18n="tagLead">Leitung</span>
                     </div>
 
                     <div class="project-links">
@@ -187,7 +228,7 @@
                             target="_blank"
                             rel="noopener noreferrer"
                         >
-                            Discord öffnen
+                            <span data-i18n="openDiscord">Discord öffnen</span>
                             <i data-lucide="arrow-right"></i>
                         </a>
 
@@ -197,41 +238,36 @@
                             target="_blank"
                             rel="noopener noreferrer"
                         >
-                            <i data-lucide="youtube"></i>
-                            YouTube
+                            <i data-lucide="circle-play"></i>
+                            <span>YouTube</span>
                         </a>
                     </div>
                 </div>
-            </div>
-
+            </article>
         </section>
 
+        <!-- Gaming -->
         <section class="section">
             <div class="section-heading">
                 <span class="section-line"></span>
-                <h2>Gaming</h2>
+                <h2 data-i18n="sectionGaming">Gaming</h2>
                 <span class="section-line"></span>
             </div>
 
-            <a
-                class="project-card eas-card"
-                href="https://discord.gg/pQCr73nwWY"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                <div class="eas-image">
-                    <img src="assets/images/eas.jpg" alt="EAS Projekt">
-                    <div class="eas-overlay"></div>
-                    <span class="coming-soon">COMING SOON</span>
+            <article class="card project-card">
+                <div class="card-media">
+                    <img src="assets/images/eas.jpg" alt="EAS">
+                    <div class="card-media-overlay"></div>
+                    <span class="media-badge">COMING SOON</span>
                 </div>
 
-                <div class="project-info">
+                <div class="card-body">
                     <div class="project-title-row">
                         <h3>EAS</h3>
-                        <span class="status development">Im Team</span>
+                        <span class="status development" data-i18n="statusTeam">Im Team</span>
                     </div>
 
-                    <p>
+                    <p data-i18n="easText">
                         Ein Roleplay-Projekt, bei dem ich Teil des Teams bin.
                         Gebaut wird von anderen, dem Discord kannst du aber
                         schon beitreten.
@@ -243,74 +279,93 @@
                         <span class="project-tag">Team</span>
                     </div>
 
-                    <span class="project-link">
-                        Discord beitreten
-                        <i data-lucide="arrow-right"></i>
-                    </span>
+                    <div class="project-links">
+                        <a
+                            class="project-link"
+                            href="https://discord.gg/pQCr73nwWY"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <span data-i18n="joinDiscord">Discord beitreten</span>
+                            <i data-lucide="arrow-right"></i>
+                        </a>
+                    </div>
                 </div>
-            </a>
+            </article>
         </section>
 
+        <!-- Hosting -->
         <section class="section">
             <div class="section-heading">
                 <span class="section-line"></span>
-                <h2>Hosting</h2>
+                <h2 data-i18n="sectionHosting">Hosting</h2>
                 <span class="section-line"></span>
             </div>
 
-            <a
-                class="project-card"
-                href="https://discord.gg/Et9a3bzH7v"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                <img src="assets/images/hosterprofilbild.jpg" alt="Bot Hosting" class="project-avatar">
+            <article class="card project-card">
+                <div class="card-media">
+                    <img src="assets/images/serverixbanner.jpg" alt="Serverix">
+                    <div class="card-media-overlay"></div>
+                </div>
 
-                <div class="project-info">
+                <div class="card-body">
                     <div class="project-title-row">
-                        <h3>Bot Hosting</h3>
-                        <span class="status active">Hoster</span>
+                        <h3>Serverix</h3>
+                        <span class="status active" data-i18n="statusHost">Hoster</span>
                     </div>
 
-                    <p>
+                    <p data-i18n="serverixText">
                         Hier hoste ich meine Discord Bots. Du kannst dem
-                        Discord des Hosters beitreten.
+                        Discord von Serverix beitreten.
                     </p>
 
-                    <span class="project-link">
-                        Discord beitreten
-                        <i data-lucide="arrow-right"></i>
-                    </span>
+                    <div class="project-tags">
+                        <span class="project-tag">Hosting</span>
+                        <span class="project-tag">Discord Bots</span>
+                    </div>
+
+                    <div class="project-links">
+                        <a
+                            class="project-link"
+                            href="https://discord.gg/Et9a3bzH7v"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <span data-i18n="joinDiscord">Discord beitreten</span>
+                            <i data-lucide="arrow-right"></i>
+                        </a>
+                    </div>
                 </div>
-            </a>
+            </article>
         </section>
 
+        <!-- Skills -->
         <section class="section">
             <div class="section-heading">
                 <span class="section-line"></span>
-                <h2>Was ich mache</h2>
+                <h2 data-i18n="sectionSkills">Was ich mache</h2>
                 <span class="section-line"></span>
             </div>
 
             <div class="skills">
-                <div class="skill">
+                <div class="card skill">
                     <span class="skill-icon"><i data-lucide="braces"></i></span>
                     <span>JavaScript</span>
                 </div>
 
-                <div class="skill">
+                <div class="card skill">
                     <span class="skill-icon"><i data-lucide="terminal"></i></span>
                     <span>Python</span>
                 </div>
 
-                <div class="skill">
+                <div class="card skill">
                     <span class="skill-icon"><i data-lucide="bot"></i></span>
                     <span>Discord Development</span>
                 </div>
 
-                <div class="skill">
+                <div class="card skill">
                     <span class="skill-icon"><i data-lucide="gamepad-2"></i></span>
-                    <span>Zocken</span>
+                    <span data-i18n="skillGaming">Zocken</span>
                 </div>
             </div>
         </section>
@@ -318,11 +373,11 @@
         <footer>
             <div class="footer-line"></div>
             <p>© 2026 Tommy</p>
-            <span>Made with code & coffee.</span>
+            <span data-i18n="footerText">Made with code & coffee.</span>
         </footer>
     </main>
 
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
     <script src="index.js"></script>
 </body>
 </html>
