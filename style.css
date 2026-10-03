@@ -1134,19 +1134,13 @@ footer span {
     }
 }
 
-/* =========================================================
-   ERGÄNZUNG – ans ENDE der bestehenden style.css kopieren
-   (überschreibt die alten Welcome-Regeln, alles andere bleibt)
-   ========================================================= */
-
-
-/* ---------- Welcome-Screen: ruhig, unscharf, nichts dahinter sichtbar ---------- */
+/* ---------- Welcome-Screen: unscharf, blickdicht, nur das T bewegt sich ---------- */
 
 .welcome-screen {
     overflow: hidden;
-    background:
-        radial-gradient(circle at 50% 38%, rgba(124, 58, 237, 0.16), transparent 55%),
-        rgba(6, 7, 10, 0.92);
+    touch-action: none;
+    overscroll-behavior: contain;
+    background: var(--welcome-bg);
     -webkit-backdrop-filter: blur(36px) saturate(140%);
     backdrop-filter: blur(36px) saturate(140%);
     transition:
@@ -1156,53 +1150,9 @@ footer span {
         -webkit-backdrop-filter 1s ease;
 }
 
-:root[data-theme="light"] .welcome-screen {
-    background:
-        radial-gradient(circle at 50% 38%, rgba(139, 92, 246, 0.16), transparent 55%),
-        rgba(244, 243, 250, 0.92);
-}
-
 .welcome-screen.hidden {
     -webkit-backdrop-filter: blur(0);
     backdrop-filter: blur(0);
-}
-
-.welcome-orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(70px);
-    pointer-events: none;
-    will-change: transform;
-}
-
-.orb-a {
-    width: 460px;
-    height: 460px;
-    top: -140px;
-    left: -120px;
-    background: #7c3aed;
-    opacity: 0.38;
-    animation: orbDriftA 22s ease-in-out infinite alternate;
-}
-
-.orb-b {
-    width: 420px;
-    height: 420px;
-    right: -130px;
-    top: 28%;
-    background: #4f46e5;
-    opacity: 0.34;
-    animation: orbDriftB 26s ease-in-out infinite alternate;
-}
-
-.orb-c {
-    width: 340px;
-    height: 340px;
-    left: 30%;
-    bottom: -150px;
-    background: #ec4899;
-    opacity: 0.16;
-    animation: orbDriftC 30s ease-in-out infinite alternate;
 }
 
 .welcome-content {
@@ -1264,21 +1214,6 @@ footer span {
     0%   { transform: scale(1);   opacity: 0.6; }
     70%  { transform: scale(1.6); opacity: 0; }
     100% { transform: scale(1.6); opacity: 0; }
-}
-
-@keyframes orbDriftA {
-    from { transform: translate(0, 0) scale(1); }
-    to   { transform: translate(90px, 70px) scale(1.15); }
-}
-
-@keyframes orbDriftB {
-    from { transform: translate(0, 0) scale(1); }
-    to   { transform: translate(-80px, 60px) scale(1.1); }
-}
-
-@keyframes orbDriftC {
-    from { transform: translate(0, 0) scale(1); }
-    to   { transform: translate(60px, -50px) scale(1.2); }
 }
 
 
@@ -1489,23 +1424,6 @@ footer span {
     background: var(--chip-bg-hover);
 }
 
-.widget-wrap {
-    display: flex;
-    justify-content: center;
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    background: var(--chip-bg);
-    overflow: hidden;
-}
-
-.widget-wrap iframe {
-    display: block;
-    width: 100%;
-    max-width: 350px;
-    height: 500px;
-    border: 0;
-}
-
 @media (max-width: 700px) {
     .card-links {
         padding: 10px 18px 18px;
@@ -1520,4 +1438,229 @@ footer span {
     .info-grid {
         grid-template-columns: 1fr;
     }
+}
+
+
+/* ---------- Texte in den aufgeklappten Cards ---------- */
+
+.details-text {
+    margin-bottom: 16px;
+    color: var(--text-2);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+
+/* ---------- Seite im Welcome-Screen nicht scrollbar ---------- */
+
+html:has(body.locked) {
+    overflow: hidden;
+}
+
+
+/* ---------- Sanfter Sprachwechsel ---------- */
+
+[data-i18n] {
+    transition: opacity 0.22s ease;
+}
+
+body.i18n-out [data-i18n] {
+    opacity: 0;
+}
+
+
+/* ---------- Sanfter Hell/Dunkel-Wechsel ----------
+   Die Farbvariablen werden registriert, damit sie weich
+   ineinander überblendet werden können. */
+
+@property --bg {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #08090c;
+}
+
+@property --text {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #ffffff;
+}
+
+@property --text-2 {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #a8abb8;
+}
+
+@property --text-3 {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #8f93a3;
+}
+
+@property --text-4 {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #818592;
+}
+
+@property --heading {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #d8d9e0;
+}
+
+@property --surface-1 {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: rgba(255, 255, 255, 0.045);
+}
+
+@property --surface-2 {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: rgba(255, 255, 255, 0.018);
+}
+
+@property --surface-hover-1 {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: rgba(139, 92, 246, 0.08);
+}
+
+@property --surface-hover-2 {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: rgba(255, 255, 255, 0.025);
+}
+
+@property --chip-bg {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: rgba(255, 255, 255, 0.04);
+}
+
+@property --chip-bg-hover {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: rgba(139, 92, 246, 0.1);
+}
+
+@property --border {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: rgba(255, 255, 255, 0.08);
+}
+
+@property --track {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: rgba(255, 255, 255, 0.1);
+}
+
+@property --accent {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #8b5cf6;
+}
+
+@property --accent-soft {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #a78bfa;
+}
+
+@property --accent-text {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #b29af4;
+}
+
+@property --accent-text-hover {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #d8ccff;
+}
+
+@property --tag-text {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #beb4e6;
+}
+
+@property --icon-text {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #d0c3ff;
+}
+
+@property --topbtn-bg {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: rgba(20, 21, 28, 0.88);
+}
+
+@property --welcome-bg {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: rgba(6, 7, 10, 0.97);
+}
+
+@property --grid-line {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: rgba(255, 255, 255, 0.025);
+}
+
+@property --status-active {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #86efac;
+}
+
+@property --glow-opacity {
+    syntax: '<number>';
+    inherits: true;
+    initial-value: 0.16;
+}
+
+@property --glow-boost {
+    syntax: '<number>';
+    inherits: true;
+    initial-value: 0.45;
+}
+
+html.theme-fade {
+    transition:
+        --bg 0.6s ease,
+        --text 0.6s ease,
+        --text-2 0.6s ease,
+        --text-3 0.6s ease,
+        --text-4 0.6s ease,
+        --heading 0.6s ease,
+        --surface-1 0.6s ease,
+        --surface-2 0.6s ease,
+        --surface-hover-1 0.6s ease,
+        --surface-hover-2 0.6s ease,
+        --chip-bg 0.6s ease,
+        --chip-bg-hover 0.6s ease,
+        --border 0.6s ease,
+        --track 0.6s ease,
+        --accent 0.6s ease,
+        --accent-soft 0.6s ease,
+        --accent-text 0.6s ease,
+        --accent-text-hover 0.6s ease,
+        --tag-text 0.6s ease,
+        --icon-text 0.6s ease,
+        --topbtn-bg 0.6s ease,
+        --welcome-bg 0.6s ease,
+        --grid-line 0.6s ease,
+        --status-active 0.6s ease,
+        --glow-opacity 0.6s ease,
+        --glow-boost 0.6s ease;
+}
+
+html.theme-fade *,
+html.theme-fade *::before,
+html.theme-fade *::after {
+    transition: none !important;
 }
