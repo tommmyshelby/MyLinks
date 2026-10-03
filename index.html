@@ -7,7 +7,6 @@
     <meta name="description" content="Tommy – Discord Development, JavaScript, Python und Core3D.">
     <title>Tommy — Links</title>
 
-    
     <script>
         (function () {
             try {
@@ -37,7 +36,6 @@
         <div class="background-grid"></div>
     </div>
 
-  
     <div class="topbar">
         <button class="top-button" id="lang-button" type="button" data-i18n-aria="langAria" data-i18n-title="langAria">
             <i data-lucide="languages"></i>
@@ -54,7 +52,12 @@
         </button>
     </div>
 
+    <!-- Willkommen-Screen -->
     <div class="welcome-screen" id="welcome-screen">
+        <div class="welcome-orb orb-a" aria-hidden="true"></div>
+        <div class="welcome-orb orb-b" aria-hidden="true"></div>
+        <div class="welcome-orb orb-c" aria-hidden="true"></div>
+
         <div class="welcome-content">
             <div class="welcome-logo">T</div>
             <h1 data-i18n="welcomeTitle">Willkommen</h1>
@@ -113,7 +116,7 @@
             </div>
         </section>
 
-      
+        <!-- Musik -->
         <section class="card music-card">
             <div class="music-cover">
                 <div class="music-cover-overlay"></div>
@@ -189,224 +192,367 @@
             <audio id="audio" preload="metadata" loop></audio>
         </section>
 
-      
+        <!-- Meine Projekte -->
         <section class="section">
             <div class="section-heading">
                 <span class="section-line"></span>
-                <h2 data-i18n="sectionProjects">Meine Projekte</h2>
+                <h2>
+                    <button class="section-toggle" type="button" aria-expanded="true" aria-controls="sec-projects">
+                        <span data-i18n="sectionProjects">Meine Projekte</span>
+                        <i data-lucide="chevron-down"></i>
+                    </button>
+                </h2>
                 <span class="section-line"></span>
             </div>
 
-            <article class="card project-card">
-                <div class="card-media">
-                    <img src="assets/images/coreprofilbild.jpg" loading="lazy" decoding="async" alt="Core3D">
-                    <div class="card-media-overlay"></div>
+            <div class="collapse" id="sec-projects">
+                <div class="collapse-inner">
+
+                    <!-- Core3D (mit Discord-Widget) -->
+                    <article class="card project-card">
+                        <div class="card-head" role="button" tabindex="0" aria-expanded="false" aria-controls="details-core3d">
+                            <div class="card-media">
+                                <img src="assets/images/coreprofilbild.jpg" loading="lazy" decoding="async" alt="Core3D">
+                                <div class="card-media-overlay"></div>
+                                <span class="card-chevron" aria-hidden="true"><i data-lucide="chevron-down"></i></span>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="project-title-row">
+                                    <h3>Core3D</h3>
+                                    <span class="status active" data-i18n="statusCommunity">Community</span>
+                                </div>
+
+                                <p data-i18n="coreText">
+                                    Ein Server rund um 3D Design und 3D-Druck, den ich mit
+                                    einem Freund betreibe. Ich leite die Community, die
+                                    3D-Arbeit übernimmt mein Kumpel.
+                                </p>
+
+                                <div class="project-tags">
+                                    <span class="project-tag" data-i18n="tag3d">3D-Druck</span>
+                                    <span class="project-tag" data-i18n="tagCommunity">Community</span>
+                                    <span class="project-tag" data-i18n="tagLead">Leitung</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-links project-links">
+                            <a class="project-link" href="https://discord.gg/33mb9W3KgB" target="_blank" rel="noopener noreferrer">
+                                <span data-i18n="openDiscord">Discord öffnen</span>
+                                <i data-lucide="arrow-right"></i>
+                            </a>
+
+                            <a class="project-link" href="https://www.youtube.com/@Core3D_Print" target="_blank" rel="noopener noreferrer">
+                                <i data-lucide="circle-play"></i>
+                                <span>YouTube</span>
+                            </a>
+                        </div>
+
+                        <div class="collapse closed" id="details-core3d">
+                            <div class="collapse-inner">
+                                <div class="card-details">
+                                    <div class="link-group-title" data-i18n="widgetTitle">Live vom Server</div>
+                                    <div class="widget-wrap">
+                                        <iframe
+                                            id="core3d-widget"
+                                            data-widget-id="1484589991068831887"
+                                            title="Core3D Discord Widget"
+                                            width="350"
+                                            height="500"
+                                            allowtransparency="true"
+                                            frameborder="0"
+                                            sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
+                                        ></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
                 </div>
-
-                <div class="card-body">
-                    <div class="project-title-row">
-                        <h3>Core3D</h3>
-                        <span class="status active" data-i18n="statusCommunity">Community</span>
-                    </div>
-
-                    <p data-i18n="coreText">
-                        Ein Server rund um 3D Design und 3D-Druck, den ich mit
-                        einem Freund betreibe. Ich leite die Community, die
-                        3D-Arbeit übernimmt mein Kumpel.
-                    </p>
-
-                    <div class="project-tags">
-                        <span class="project-tag" data-i18n="tag3d">3D-Druck</span>
-                        <span class="project-tag" data-i18n="tagCommunity">Community</span>
-                        <span class="project-tag" data-i18n="tagLead">Leitung</span>
-                    </div>
-
-                    <div class="project-links">
-                        <a
-                            class="project-link"
-                            href="https://discord.gg/33mb9W3KgB"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <span data-i18n="openDiscord">Discord öffnen</span>
-                            <i data-lucide="arrow-right"></i>
-                        </a>
-
-                        <a
-                            class="project-link"
-                            href="https://www.youtube.com/@Core3D_Print"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <i data-lucide="circle-play"></i>
-                            <span>YouTube</span>
-                        </a>
-                    </div>
-                </div>
-            </article>
+            </div>
         </section>
 
-  
+        <!-- Gaming -->
         <section class="section">
             <div class="section-heading">
                 <span class="section-line"></span>
-                <h2 data-i18n="sectionGaming">Gaming</h2>
+                <h2>
+                    <button class="section-toggle" type="button" aria-expanded="true" aria-controls="sec-gaming">
+                        <span data-i18n="sectionGaming">Gaming</span>
+                        <i data-lucide="chevron-down"></i>
+                    </button>
+                </h2>
                 <span class="section-line"></span>
             </div>
 
-            <article class="card project-card">
-                <div class="card-media">
-                    <img src="assets/images/eas.jpg" loading="lazy" decoding="async" alt="EAS">
-                    <div class="card-media-overlay"></div>
-                    <span class="media-badge">COMING SOON</span>
+            <div class="collapse" id="sec-gaming">
+                <div class="collapse-inner">
+
+                    <!-- EAS -->
+                    <article class="card project-card">
+                        <div class="card-head" role="button" tabindex="0" aria-expanded="false" aria-controls="details-eas">
+                            <div class="card-media">
+                                <img src="assets/images/eas.jpg" loading="lazy" decoding="async" alt="EAS">
+                                <div class="card-media-overlay"></div>
+                                <span class="media-badge">COMING SOON</span>
+                                <span class="card-chevron" aria-hidden="true"><i data-lucide="chevron-down"></i></span>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="project-title-row">
+                                    <h3>EAS</h3>
+                                    <span class="status development" data-i18n="statusTeam">Im Team</span>
+                                </div>
+
+                                <p data-i18n="easText">
+                                    Ein Roleplay-Projekt, bei dem ich Teil des Teams bin.
+                                    Gebaut wird von anderen, dem Discord kannst du aber
+                                    schon beitreten.
+                                </p>
+
+                                <div class="project-tags">
+                                    <span class="project-tag">Roleplay</span>
+                                    <span class="project-tag">V2</span>
+                                    <span class="project-tag">Team</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-links project-links">
+                            <a class="project-link" href="https://discord.gg/pQCr73nwWY" target="_blank" rel="noopener noreferrer">
+                                <span data-i18n="joinDiscord">Discord beitreten</span>
+                                <i data-lucide="arrow-right"></i>
+                            </a>
+                        </div>
+
+                        <div class="collapse closed" id="details-eas">
+                            <div class="collapse-inner">
+                                <div class="card-details">
+                                    <div class="info-grid">
+                                        <div class="info-item">
+                                            <span class="info-label" data-i18n="infoType">Art</span>
+                                            <span class="info-value">Roleplay</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label" data-i18n="infoVersion">Version</span>
+                                            <span class="info-value">V2</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label" data-i18n="infoStatus">Status</span>
+                                            <span class="info-value">Coming Soon</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label" data-i18n="infoRole">Meine Rolle</span>
+                                            <span class="info-value" data-i18n="roleTeam">Teammitglied</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Fichtelhillz Trucker -->
+                    <article class="card project-card">
+                        <div class="card-head" role="button" tabindex="0" aria-expanded="false" aria-controls="details-trucker">
+                            <div class="card-media">
+                                <img src="assets/images/trucker.png" loading="lazy" decoding="async" alt="Fichtelhillz Trucker">
+                                <div class="card-media-overlay"></div>
+                                <span class="card-chevron" aria-hidden="true"><i data-lucide="chevron-down"></i></span>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="project-title-row">
+                                    <h3 class="title-with-icon">
+                                        <i data-lucide="tree-pine"></i>
+                                        <span>Fichtelhillz Trucker</span>
+                                    </h3>
+                                    <span class="status development" data-i18n="statusMember">Mitglied</span>
+                                </div>
+
+                                <p data-i18n="truckerText">
+                                    Eine Community rund ums Trucking in ETS2 mit
+                                    gemeinsamen Touren, Convoys und Austausch. Ich bin
+                                    dort Mitglied, Anfänger und Profis sind willkommen.
+                                </p>
+
+                                <div class="project-tags">
+                                    <span class="project-tag" data-i18n="tagMember">Mitglied</span>
+                                    <span class="project-tag">ETS2</span>
+                                    <span class="project-tag">Trucking</span>
+                                    <span class="project-tag">Convoys</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-links project-links">
+                            <a class="project-link" href="https://discord.gg/2WqvykHESn" target="_blank" rel="noopener noreferrer">
+                                <span data-i18n="joinDiscord">Discord beitreten</span>
+                                <i data-lucide="arrow-right"></i>
+                            </a>
+                        </div>
+
+                        <div class="collapse closed" id="details-trucker">
+                            <div class="collapse-inner">
+                                <div class="card-details">
+                                    <div class="info-grid">
+                                        <div class="info-item">
+                                            <span class="info-label" data-i18n="infoGame">Spiel</span>
+                                            <span class="info-value">Euro Truck Simulator 2</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label" data-i18n="infoRole">Meine Rolle</span>
+                                            <span class="info-value" data-i18n="statusMember">Mitglied</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="link-group-title" data-i18n="groupChannels">Kanäle</div>
+                                    <div class="link-grid">
+                                        <a class="link-chip" href="https://www.youtube.com/@fichtelhillztrucker" target="_blank" rel="noopener noreferrer">
+                                            <i data-lucide="circle-play"></i>
+                                            <span>YouTube</span>
+                                        </a>
+                                        <a class="link-chip" href="https://www.twitch.tv/fichtelhillztrucker" target="_blank" rel="noopener noreferrer">
+                                            <i data-lucide="tv"></i>
+                                            <span>Twitch</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
                 </div>
-
-                <div class="card-body">
-                    <div class="project-title-row">
-                        <h3>EAS</h3>
-                        <span class="status development" data-i18n="statusTeam">Im Team</span>
-                    </div>
-
-                    <p data-i18n="easText">
-                        Ein Roleplay-Projekt, bei dem ich Teil des Teams bin.
-                        Gebaut wird von anderen, dem Discord kannst du aber
-                        schon beitreten.
-                    </p>
-
-                    <div class="project-tags">
-                        <span class="project-tag">Roleplay</span>
-                        <span class="project-tag">V2</span>
-                        <span class="project-tag">Team</span>
-                    </div>
-
-                    <div class="project-links">
-                        <a
-                            class="project-link"
-                            href="https://discord.gg/pQCr73nwWY"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <span data-i18n="joinDiscord">Discord beitreten</span>
-                            <i data-lucide="arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
-            </article>
-
-            <article class="card project-card">
-                <div class="card-media">
-                    <img src="assets/images//trucker.png" loading="lazy" decoding="async" alt="Fichtelhillz Trucker">
-                    <div class="card-media-overlay"></div>
-                </div>
-
-                <div class="card-body">
-                    <div class="project-title-row">
-                        <h3 class="title-with-icon">
-                            <i data-lucide="tree-pine"></i>
-                            <span>Fichtelhillz Trucker</span>
-                        </h3>
-                        <span class="status development" data-i18n="statusMember">Mitglied</span>
-                    </div>
-
-                    <p data-i18n="truckerText">
-                        Eine Community rund ums Trucking in ETS2 mit
-                        gemeinsamen Touren, Convoys und Austausch. Ich bin
-                        dort Mitglied, Anfänger und Profis sind willkommen.
-                    </p>
-
-                    <div class="project-tags">
-                        <span class="project-tag" data-i18n="tagMember">Mitglied</span>
-                        <span class="project-tag">ETS2</span>
-                        <span class="project-tag">Trucking</span>
-                        <span class="project-tag">Convoys</span>
-                    </div>
-
-                    <div class="project-links">
-                        <a
-                            class="project-link"
-                            href="https://discord.gg/2WqvykHESn"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <span data-i18n="joinDiscord">Discord beitreten</span>
-                            <i data-lucide="arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
-            </article>
+            </div>
         </section>
 
-
+        <!-- Hosting -->
         <section class="section">
             <div class="section-heading">
                 <span class="section-line"></span>
-                <h2 data-i18n="sectionHosting">Hosting</h2>
+                <h2>
+                    <button class="section-toggle" type="button" aria-expanded="true" aria-controls="sec-hosting">
+                        <span data-i18n="sectionHosting">Hosting</span>
+                        <i data-lucide="chevron-down"></i>
+                    </button>
+                </h2>
                 <span class="section-line"></span>
             </div>
 
-            <article class="card project-card">
-                <div class="card-media">
-                    <img src="assets/images/serverixbanner.jpg" loading="lazy" decoding="async" alt="Serverix">
-                    <div class="card-media-overlay"></div>
+            <div class="collapse" id="sec-hosting">
+                <div class="collapse-inner">
+
+                    <!-- Serverix -->
+                    <article class="card project-card">
+                        <div class="card-head" role="button" tabindex="0" aria-expanded="false" aria-controls="details-serverix">
+                            <div class="card-media">
+                                <img src="assets/images/serverixbanner.jpg" loading="lazy" decoding="async" alt="Serverix">
+                                <div class="card-media-overlay"></div>
+                                <span class="card-chevron" aria-hidden="true"><i data-lucide="chevron-down"></i></span>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="project-title-row">
+                                    <h3>Serverix</h3>
+                                    <span class="status active" data-i18n="statusHost">Hoster</span>
+                                </div>
+
+                                <p data-i18n="serverixText">
+                                    Hier hoste ich meine Discord Bots. Du kannst dem
+                                    Discord von Serverix beitreten.
+                                </p>
+
+                                <div class="project-tags">
+                                    <span class="project-tag">Hosting</span>
+                                    <span class="project-tag">Discord Bots</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-links project-links">
+                            <a class="project-link" href="https://discord.gg/Et9a3bzH7v" target="_blank" rel="noopener noreferrer">
+                                <span data-i18n="joinDiscord">Discord beitreten</span>
+                                <i data-lucide="arrow-right"></i>
+                            </a>
+                        </div>
+
+                        <div class="collapse closed" id="details-serverix">
+                            <div class="collapse-inner">
+                                <div class="card-details">
+                                    <div class="link-group-title" data-i18n="groupLinks">Links</div>
+                                    <div class="link-grid">
+                                        <a class="link-chip" href="https://serverix.host/" target="_blank" rel="noopener noreferrer">
+                                            <i data-lucide="globe"></i>
+                                            <span data-i18n="linkWebsite">Offizielle Seite</span>
+                                        </a>
+                                        <a class="link-chip" href="https://status.serverix.host/" target="_blank" rel="noopener noreferrer">
+                                            <i data-lucide="activity"></i>
+                                            <span data-i18n="linkStatus">Statusseite</span>
+                                        </a>
+                                        <a class="link-chip" href="https://whatsapp.com/channel/0029VbCDpfH35fM0pUsaN91C" target="_blank" rel="noopener noreferrer">
+                                            <i data-lucide="message-circle"></i>
+                                            <span data-i18n="linkWhatsapp">WhatsApp-Kanal</span>
+                                        </a>
+                                    </div>
+
+                                    <div class="link-group-title" data-i18n="groupLegal">Rechtliches</div>
+                                    <div class="link-grid">
+                                        <a class="link-chip" href="https://serverix.host/impressum" target="_blank" rel="noopener noreferrer">
+                                            <i data-lucide="file-text"></i>
+                                            <span data-i18n="linkImprint">Impressum</span>
+                                        </a>
+                                        <a class="link-chip" href="https://serverix.host/datenschutz" target="_blank" rel="noopener noreferrer">
+                                            <i data-lucide="shield-check"></i>
+                                            <span data-i18n="linkPrivacy">Datenschutz</span>
+                                        </a>
+                                        <a class="link-chip" href="https://serverix.host/agb" target="_blank" rel="noopener noreferrer">
+                                            <i data-lucide="scroll-text"></i>
+                                            <span data-i18n="linkTerms">AGB</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
                 </div>
-
-                <div class="card-body">
-                    <div class="project-title-row">
-                        <h3>Serverix</h3>
-                        <span class="status active" data-i18n="statusHost">Hoster</span>
-                    </div>
-
-                    <p data-i18n="serverixText">
-                        Hier hoste ich meine Discord Bots. Du kannst dem
-                        Discord von Serverix beitreten.
-                    </p>
-
-                    <div class="project-tags">
-                        <span class="project-tag">Hosting</span>
-                        <span class="project-tag">Discord Bots</span>
-                    </div>
-
-                    <div class="project-links">
-                        <a
-                            class="project-link"
-                            href="https://discord.gg/Et9a3bzH7v"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <span data-i18n="joinDiscord">Discord beitreten</span>
-                            <i data-lucide="arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
-            </article>
+            </div>
         </section>
 
+        <!-- Skills -->
         <section class="section">
             <div class="section-heading">
                 <span class="section-line"></span>
-                <h2 data-i18n="sectionSkills">Was ich mache</h2>
+                <h2>
+                    <button class="section-toggle" type="button" aria-expanded="true" aria-controls="sec-skills">
+                        <span data-i18n="sectionSkills">Was ich mache</span>
+                        <i data-lucide="chevron-down"></i>
+                    </button>
+                </h2>
                 <span class="section-line"></span>
             </div>
 
-            <div class="skills">
-                <div class="card skill">
-                    <span class="skill-icon"><i data-lucide="braces"></i></span>
-                    <span>JavaScript</span>
-                </div>
+            <div class="collapse" id="sec-skills">
+                <div class="collapse-inner">
+                    <div class="skills">
+                        <div class="card skill">
+                            <span class="skill-icon"><i data-lucide="braces"></i></span>
+                            <span>JavaScript</span>
+                        </div>
 
-                <div class="card skill">
-                    <span class="skill-icon"><i data-lucide="terminal"></i></span>
-                    <span>Python</span>
-                </div>
+                        <div class="card skill">
+                            <span class="skill-icon"><i data-lucide="terminal"></i></span>
+                            <span>Python</span>
+                        </div>
 
-                <div class="card skill">
-                    <span class="skill-icon"><i data-lucide="bot"></i></span>
-                    <span>Discord Development</span>
-                </div>
+                        <div class="card skill">
+                            <span class="skill-icon"><i data-lucide="bot"></i></span>
+                            <span>Discord Development</span>
+                        </div>
 
-                <div class="card skill">
-                    <span class="skill-icon"><i data-lucide="gamepad-2"></i></span>
-                    <span data-i18n="skillGaming">Zocken</span>
+                        <div class="card skill">
+                            <span class="skill-icon"><i data-lucide="gamepad-2"></i></span>
+                            <span data-i18n="skillGaming">Zocken</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
