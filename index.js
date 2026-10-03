@@ -48,7 +48,6 @@ const translations = {
         joinDiscord: 'Discord beitreten',
         skillGaming: 'Zocken',
         footerText: 'Made with code & coffee.',
-        widgetTitle: 'Live vom Server',
         infoType: 'Art',
         infoVersion: 'Version',
         infoStatus: 'Status',
@@ -63,7 +62,13 @@ const translations = {
         linkWhatsapp: 'WhatsApp-Kanal',
         linkImprint: 'Impressum',
         linkPrivacy: 'Datenschutz',
-        linkTerms: 'AGB'
+        linkTerms: 'AGB',
+        infoFocus: 'Schwerpunkt',
+        focus3d: '3D-Design & 3D-Druck',
+        coreMore: 'Core3D dreht sich um 3D Design und 3D-Druck. Ich kümmere mich um die Leitung und den Aufbau der Community, mein Kumpel übernimmt die 3D-Arbeit. Über Discord und YouTube bleibst du auf dem Laufenden.',
+        easMore: 'EAS ist ein Roleplay-Projekt, das sich gerade in Entwicklung befindet (V2). Ich bin Teil des Teams und helfe mit, das Projekt voranzubringen, den Großteil des Aufbaus übernehmen andere. Dem Discord kannst du schon jetzt beitreten.',
+        truckerMore: 'Fichtelhillz Trucker ist eine Community für alle, die gerne ETS2 fahren, egal ob bei gemeinsamen Touren, in Convoys oder einfach zum Quatschen. Ich bin als Mitglied dabei. Neben Discord gibt es auch einen YouTube- und einen Twitch-Kanal.',
+        serverixMore: 'Serverix ist der Hoster, bei dem meine Discord Bots laufen. Auf der Statusseite siehst du, ob alles online ist, und über den WhatsApp-Kanal bleibst du auf dem Laufenden. Alle wichtigen Links findest du hier.'
     },
     en: {
         langAria: 'Change language',
@@ -104,7 +109,6 @@ const translations = {
         joinDiscord: 'Join Discord',
         skillGaming: 'Gaming',
         footerText: 'Made with code & coffee.',
-        widgetTitle: 'Live from the server',
         infoType: 'Type',
         infoVersion: 'Version',
         infoStatus: 'Status',
@@ -119,7 +123,13 @@ const translations = {
         linkWhatsapp: 'WhatsApp channel',
         linkImprint: 'Legal notice',
         linkPrivacy: 'Privacy policy',
-        linkTerms: 'Terms'
+        linkTerms: 'Terms',
+        infoFocus: 'Focus',
+        focus3d: '3D design & 3D printing',
+        coreMore: 'Core3D is all about 3D design and 3D printing. I take care of leading and growing the community, my buddy handles the 3D work. You can stay up to date through Discord and YouTube.',
+        easMore: 'EAS is a roleplay project that is currently in development (V2). I am part of the team and help move the project forward, while most of the building is done by others. You can already join the Discord.',
+        truckerMore: 'Fichtelhillz Trucker is a community for everyone who enjoys ETS2, whether it is shared tours, convoys or just chatting. I am a member there. Besides Discord there is also a YouTube and a Twitch channel.',
+        serverixMore: 'Serverix is the host where my Discord bots run. The status page shows whether everything is online, and the WhatsApp channel keeps you updated. You will find all important links here.'
     }
 };
 
@@ -194,11 +204,29 @@ function applyLanguage(lang) {
     updateVolumeButton();
 }
 
+let langTimer = null;
+
 function toggleLanguage() {
     const next = currentLang === 'de' ? 'en' : 'de';
 
     writeStorage('tommy-lang', next);
-    applyLanguage(next);
+
+    if (reducedMotion) {
+        applyLanguage(next);
+        return;
+    }
+
+    document.querySelectorAll('[data-lang-option]').forEach((el) => {
+        el.classList.toggle('active', el.dataset.langOption === next);
+    });
+
+    clearTimeout(langTimer);
+    document.body.classList.add('i18n-out');
+
+    langTimer = setTimeout(() => {
+        applyLanguage(next);
+        requestAnimationFrame(() => document.body.classList.remove('i18n-out'));
+    }, 220);
 }
 
 
@@ -211,36 +239,24 @@ function applyTheme(theme) {
     if (meta) {
         meta.setAttribute('content', value === 'light' ? '#f4f3fa' : '#08090c');
     }
-
-    refreshWidgets();
 }
+
+let themeTimer = null;
 
 function toggleTheme() {
     const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
 
     writeStorage('tommy-theme', next);
+
+    root.classList.add('theme-fade');
     applyTheme(next);
+
+    clearTimeout(themeTimer);
+    themeTimer = setTimeout(() => root.classList.remove('theme-fade'), 750);
 }
 
 
 /* Einklappen / Aufklappen */
-
-function widgetSrc(id) {
-    const theme = root.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
-
-    return `https://discord.com/widget?id=${id}&theme=${theme}`;
-}
-
-function loadWidget(frame) {
-    frame.src = widgetSrc(frame.dataset.widgetId);
-    frame.dataset.loaded = '1';
-}
-
-function refreshWidgets() {
-    document.querySelectorAll('iframe[data-widget-id][data-loaded="1"]').forEach((frame) => {
-        frame.src = widgetSrc(frame.dataset.widgetId);
-    });
-}
 
 function setupSections() {
     document.querySelectorAll('.section-toggle').forEach((button) => {
@@ -274,10 +290,6 @@ function setupCards() {
             head.setAttribute('aria-expanded', String(!open));
             card.classList.toggle('open', !open);
             details.classList.toggle('closed', open);
-
-            if (!open) {
-                details.querySelectorAll('iframe[data-widget-id]:not([data-loaded])').forEach(loadWidget);
-            }
         };
 
         head.addEventListener('click', toggle);
@@ -590,8 +602,19 @@ function initAudio() {
     });
 }
 
+function scrollToTop() {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+}
+
+function keepTopWhileLocked() {
+    if (document.body.classList.contains('locked') && window.scrollY !== 0) {
+        scrollToTop();
+    }
+}
+
 function enterWebsite() {
     document.body.classList.remove('locked');
+    scrollToTop();
     els.welcomeScreen.classList.add('hidden');
 
     setupAnalyser();
@@ -600,6 +623,14 @@ function enterWebsite() {
 
 function init() {
     document.body.classList.add('locked');
+
+    if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+    }
+
+    scrollToTop();
+    window.addEventListener('load', keepTopWhileLocked);
+    window.addEventListener('scroll', keepTopWhileLocked, { passive: true });
 
     lucide.createIcons();
 
