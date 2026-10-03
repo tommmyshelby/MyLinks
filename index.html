@@ -5,10 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#08090c">
     <meta name="description" content="Tommy – Discord Development, JavaScript, Python und Core3D.">
-    <title>Tommy — Links</title>
+    <title>Tommy  Links</title>
 
     <script>
         (function () {
+            if ('scrollRestoration' in history) {
+                history.scrollRestoration = 'manual';
+            }
             try {
                 var theme = localStorage.getItem('tommy-theme');
                 var lang = localStorage.getItem('tommy-lang');
@@ -54,10 +57,6 @@
 
     <!-- Willkommen-Screen -->
     <div class="welcome-screen" id="welcome-screen">
-        <div class="welcome-orb orb-a" aria-hidden="true"></div>
-        <div class="welcome-orb orb-b" aria-hidden="true"></div>
-        <div class="welcome-orb orb-c" aria-hidden="true"></div>
-
         <div class="welcome-content">
             <div class="welcome-logo">T</div>
             <h1 data-i18n="welcomeTitle">Willkommen</h1>
@@ -70,7 +69,7 @@
     </div>
 
     <main class="page">
-        <!-- Profil -->
+ 
         <section class="card profile">
             <div class="profile-image-wrapper">
                 <img src="assets/images/profile.jpg" decoding="async" alt="Tommy" class="profile-image">
@@ -116,7 +115,7 @@
             </div>
         </section>
 
-        <!-- Musik -->
+
         <section class="card music-card">
             <div class="music-cover">
                 <div class="music-cover-overlay"></div>
@@ -192,7 +191,7 @@
             <audio id="audio" preload="metadata" loop></audio>
         </section>
 
-        <!-- Meine Projekte -->
+     
         <section class="section">
             <div class="section-heading">
                 <span class="section-line"></span>
@@ -208,7 +207,7 @@
             <div class="collapse" id="sec-projects">
                 <div class="collapse-inner">
 
-                    <!-- Core3D (mit Discord-Widget) -->
+            
                     <article class="card project-card">
                         <div class="card-head" role="button" tabindex="0" aria-expanded="false" aria-controls="details-core3d">
                             <div class="card-media">
@@ -252,18 +251,21 @@
                         <div class="collapse closed" id="details-core3d">
                             <div class="collapse-inner">
                                 <div class="card-details">
-                                    <div class="link-group-title" data-i18n="widgetTitle">Live vom Server</div>
-                                    <div class="widget-wrap">
-                                        <iframe
-                                            id="core3d-widget"
-                                            data-widget-id="1484589991068831887"
-                                            title="Core3D Discord Widget"
-                                            width="350"
-                                            height="500"
-                                            allowtransparency="true"
-                                            frameborder="0"
-                                            sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
-                                        ></iframe>
+                                    <p class="details-text" data-i18n="coreMore">Core3D dreht sich um 3D Design und 3D-Druck. Ich kümmere mich um die Leitung und den Aufbau der Community, mein Kumpel übernimmt die 3D-Arbeit. Über Discord und YouTube bleibst du auf dem Laufenden.</p>
+
+                                    <div class="info-grid">
+                                        <div class="info-item">
+                                            <span class="info-label" data-i18n="infoType">Art</span>
+                                            <span class="info-value" data-i18n="statusCommunity">Community</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label" data-i18n="infoFocus">Schwerpunkt</span>
+                                            <span class="info-value" data-i18n="focus3d">3D-Design & 3D-Druck</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label" data-i18n="infoRole">Meine Rolle</span>
+                                            <span class="info-value" data-i18n="tagLead">Leitung</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -273,7 +275,7 @@
             </div>
         </section>
 
-        <!-- Gaming -->
+      
         <section class="section">
             <div class="section-heading">
                 <span class="section-line"></span>
@@ -289,7 +291,7 @@
             <div class="collapse" id="sec-gaming">
                 <div class="collapse-inner">
 
-                    <!-- EAS -->
+             
                     <article class="card project-card">
                         <div class="card-head" role="button" tabindex="0" aria-expanded="false" aria-controls="details-eas">
                             <div class="card-media">
@@ -329,6 +331,8 @@
                         <div class="collapse closed" id="details-eas">
                             <div class="collapse-inner">
                                 <div class="card-details">
+                                    <p class="details-text" data-i18n="easMore">EAS ist ein Roleplay-Projekt, das sich gerade in Entwicklung befindet (V2). Ich bin Teil des Teams und helfe mit, das Projekt voranzubringen, den Großteil des Aufbaus übernehmen andere. Dem Discord kannst du schon jetzt beitreten.</p>
+
                                     <div class="info-grid">
                                         <div class="info-item">
                                             <span class="info-label" data-i18n="infoType">Art</span>
@@ -352,7 +356,7 @@
                         </div>
                     </article>
 
-                    <!-- Fichtelhillz Trucker -->
+                
                     <article class="card project-card">
                         <div class="card-head" role="button" tabindex="0" aria-expanded="false" aria-controls="details-trucker">
                             <div class="card-media">
@@ -395,6 +399,8 @@
                         <div class="collapse closed" id="details-trucker">
                             <div class="collapse-inner">
                                 <div class="card-details">
+                                    <p class="details-text" data-i18n="truckerMore">Fichtelhillz Trucker ist eine Community für alle, die gerne ETS2 fahren, egal ob bei gemeinsamen Touren, in Convoys oder einfach zum Quatschen. Ich bin als Mitglied dabei. Neben Discord gibt es auch einen YouTube- und einen Twitch-Kanal.</p>
+
                                     <div class="info-grid">
                                         <div class="info-item">
                                             <span class="info-label" data-i18n="infoGame">Spiel</span>
@@ -441,7 +447,7 @@
             <div class="collapse" id="sec-hosting">
                 <div class="collapse-inner">
 
-                    <!-- Serverix -->
+                 
                     <article class="card project-card">
                         <div class="card-head" role="button" tabindex="0" aria-expanded="false" aria-controls="details-serverix">
                             <div class="card-media">
@@ -478,6 +484,8 @@
                         <div class="collapse closed" id="details-serverix">
                             <div class="collapse-inner">
                                 <div class="card-details">
+                                    <p class="details-text" data-i18n="serverixMore">Serverix ist der Hoster, bei dem meine Discord Bots laufen. Auf der Statusseite siehst du, ob alles online ist, und über den WhatsApp-Kanal bleibst du auf dem Laufenden. Alle wichtigen Links findest du hier.</p>
+
                                     <div class="link-group-title" data-i18n="groupLinks">Links</div>
                                     <div class="link-grid">
                                         <a class="link-chip" href="https://serverix.host/" target="_blank" rel="noopener noreferrer">
@@ -517,7 +525,7 @@
             </div>
         </section>
 
-        <!-- Skills -->
+    
         <section class="section">
             <div class="section-heading">
                 <span class="section-line"></span>
