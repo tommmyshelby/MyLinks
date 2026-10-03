@@ -55,11 +55,11 @@ const translations = {
         infoGame: 'Spiel',
         roleTeam: 'Teammitglied',
         groupChannels: 'Kanäle',
-        groupLinks: 'Links',
-        groupLegal: 'Rechtliches',
+        groupLinks: 'Links des Hosters',
+        groupLegal: 'Rechtliches des Hosters',
         linkWebsite: 'Offizielle Seite',
-        linkStatus: 'Statusseite',
-        linkWhatsapp: 'WhatsApp-Kanal',
+        linkStatus: 'Status von Serverix',
+        linkWhatsapp: 'WhatsApp-Kanal von Serverix',
         linkImprint: 'Impressum',
         linkPrivacy: 'Datenschutz',
         linkTerms: 'AGB',
@@ -68,7 +68,7 @@ const translations = {
         coreMore: 'Core3D dreht sich um 3D Design und 3D-Druck. Ich kümmere mich um die Leitung und den Aufbau der Community, mein Kumpel übernimmt die 3D-Arbeit. Über Discord und YouTube bleibst du auf dem Laufenden.',
         easMore: 'EAS ist ein Roleplay-Projekt, das sich gerade in Entwicklung befindet (V2). Ich bin Teil des Teams und helfe mit, das Projekt voranzubringen, den Großteil des Aufbaus übernehmen andere. Dem Discord kannst du schon jetzt beitreten.',
         truckerMore: 'Fichtelhillz Trucker ist eine Community für alle, die gerne ETS2 fahren, egal ob bei gemeinsamen Touren, in Convoys oder einfach zum Quatschen. Ich bin als Mitglied dabei. Neben Discord gibt es auch einen YouTube- und einen Twitch-Kanal.',
-        serverixMore: 'Serverix ist der Hoster, bei dem meine Discord Bots laufen. Auf der Statusseite siehst du, ob alles online ist, und über den WhatsApp-Kanal bleibst du auf dem Laufenden. Alle wichtigen Links findest du hier.'
+        serverixMore: 'Serverix ist der Hoster, bei dem meine Discord Bots laufen. Die Links hier gehören zum Hoster.'
     },
     en: {
         langAria: 'Change language',
@@ -116,11 +116,11 @@ const translations = {
         infoGame: 'Game',
         roleTeam: 'Team member',
         groupChannels: 'Channels',
-        groupLinks: 'Links',
-        groupLegal: 'Legal',
+        groupLinks: 'Host links',
+        groupLegal: 'Host legal',
         linkWebsite: 'Official website',
-        linkStatus: 'Status page',
-        linkWhatsapp: 'WhatsApp channel',
+        linkStatus: 'Serverix status',
+        linkWhatsapp: 'Serverix WhatsApp channel',
         linkImprint: 'Legal notice',
         linkPrivacy: 'Privacy policy',
         linkTerms: 'Terms',
@@ -129,7 +129,7 @@ const translations = {
         coreMore: 'Core3D is all about 3D design and 3D printing. I take care of leading and growing the community, my buddy handles the 3D work. You can stay up to date through Discord and YouTube.',
         easMore: 'EAS is a roleplay project that is currently in development (V2). I am part of the team and help move the project forward, while most of the building is done by others. You can already join the Discord.',
         truckerMore: 'Fichtelhillz Trucker is a community for everyone who enjoys ETS2, whether it is shared tours, convoys or just chatting. I am a member there. Besides Discord there is also a YouTube and a Twitch channel.',
-        serverixMore: 'Serverix is the host where my Discord bots run. The status page shows whether everything is online, and the WhatsApp channel keeps you updated. You will find all important links here.'
+        serverixMore: 'Serverix is the host where my Discord bots run. The links here belong to the host.'
     }
 };
 
