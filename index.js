@@ -47,7 +47,23 @@ const translations = {
         openDiscord: 'Discord öffnen',
         joinDiscord: 'Discord beitreten',
         skillGaming: 'Zocken',
-        footerText: 'Made with code & coffee.'
+        footerText: 'Made with code & coffee.',
+        widgetTitle: 'Live vom Server',
+        infoType: 'Art',
+        infoVersion: 'Version',
+        infoStatus: 'Status',
+        infoRole: 'Meine Rolle',
+        infoGame: 'Spiel',
+        roleTeam: 'Teammitglied',
+        groupChannels: 'Kanäle',
+        groupLinks: 'Links',
+        groupLegal: 'Rechtliches',
+        linkWebsite: 'Offizielle Seite',
+        linkStatus: 'Statusseite',
+        linkWhatsapp: 'WhatsApp-Kanal',
+        linkImprint: 'Impressum',
+        linkPrivacy: 'Datenschutz',
+        linkTerms: 'AGB'
     },
     en: {
         langAria: 'Change language',
@@ -87,7 +103,23 @@ const translations = {
         openDiscord: 'Open Discord',
         joinDiscord: 'Join Discord',
         skillGaming: 'Gaming',
-        footerText: 'Made with code & coffee.'
+        footerText: 'Made with code & coffee.',
+        widgetTitle: 'Live from the server',
+        infoType: 'Type',
+        infoVersion: 'Version',
+        infoStatus: 'Status',
+        infoRole: 'My role',
+        infoGame: 'Game',
+        roleTeam: 'Team member',
+        groupChannels: 'Channels',
+        groupLinks: 'Links',
+        groupLegal: 'Legal',
+        linkWebsite: 'Official website',
+        linkStatus: 'Status page',
+        linkWhatsapp: 'WhatsApp channel',
+        linkImprint: 'Legal notice',
+        linkPrivacy: 'Privacy policy',
+        linkTerms: 'Terms'
     }
 };
 
@@ -179,6 +211,8 @@ function applyTheme(theme) {
     if (meta) {
         meta.setAttribute('content', value === 'light' ? '#f4f3fa' : '#08090c');
     }
+
+    refreshWidgets();
 }
 
 function toggleTheme() {
@@ -186,6 +220,74 @@ function toggleTheme() {
 
     writeStorage('tommy-theme', next);
     applyTheme(next);
+}
+
+
+/* Einklappen / Aufklappen */
+
+function widgetSrc(id) {
+    const theme = root.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+
+    return `https://discord.com/widget?id=${id}&theme=${theme}`;
+}
+
+function loadWidget(frame) {
+    frame.src = widgetSrc(frame.dataset.widgetId);
+    frame.dataset.loaded = '1';
+}
+
+function refreshWidgets() {
+    document.querySelectorAll('iframe[data-widget-id][data-loaded="1"]').forEach((frame) => {
+        frame.src = widgetSrc(frame.dataset.widgetId);
+    });
+}
+
+function setupSections() {
+    document.querySelectorAll('.section-toggle').forEach((button) => {
+        const target = $(button.getAttribute('aria-controls'));
+
+        if (!target) {
+            return;
+        }
+
+        button.addEventListener('click', () => {
+            const open = button.getAttribute('aria-expanded') === 'true';
+
+            button.setAttribute('aria-expanded', String(!open));
+            target.classList.toggle('closed', open);
+        });
+    });
+}
+
+function setupCards() {
+    document.querySelectorAll('.card-head').forEach((head) => {
+        const card = head.closest('.project-card');
+        const details = $(head.getAttribute('aria-controls'));
+
+        if (!card || !details) {
+            return;
+        }
+
+        const toggle = () => {
+            const open = head.getAttribute('aria-expanded') === 'true';
+
+            head.setAttribute('aria-expanded', String(!open));
+            card.classList.toggle('open', !open);
+            details.classList.toggle('closed', open);
+
+            if (!open) {
+                details.querySelectorAll('iframe[data-widget-id]:not([data-loaded])').forEach(loadWidget);
+            }
+        };
+
+        head.addEventListener('click', toggle);
+        head.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                toggle();
+            }
+        });
+    });
 }
 
 
@@ -425,7 +527,7 @@ function visualize(now) {
         targetMid = Math.min(1, Math.max(0, (rawMid - 0.3) / 0.5));
     }
 
-  
+
     bass = targetBass > bass ? targetBass : bass * 0.9;
     mid = targetMid > mid ? targetMid : mid * 0.92;
 
@@ -504,6 +606,8 @@ function init() {
     applyTheme(root.getAttribute('data-theme'));
     initAudio();
     applyLanguage(currentLang);
+    setupSections();
+    setupCards();
 
     els.langButton.addEventListener('click', toggleLanguage);
     els.themeButton.addEventListener('click', toggleTheme);
