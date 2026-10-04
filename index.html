@@ -9,18 +9,30 @@
 
     <script>
         (function () {
-            if ('scrollRestoration' in history) {
-                history.scrollRestoration = 'manual';
-            }
+            var root = document.documentElement;
+            function get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
             try {
-                var theme = localStorage.getItem('tommy-theme');
-                var lang = localStorage.getItem('tommy-lang');
+                if ('scrollRestoration' in history) {
+                    history.scrollRestoration = 'manual';
+                }
+                var theme = get('tommy-theme');
+                var lang = get('tommy-lang');
+                var accent = get('tommy-accent');
+                if (theme === 'auto') {
+                    theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+                }
                 if (theme === 'light' || theme === 'dark') {
-                    document.documentElement.setAttribute('data-theme', theme);
+                    root.setAttribute('data-theme', theme);
                 }
                 if (lang === 'de' || lang === 'en') {
-                    document.documentElement.setAttribute('lang', lang);
+                    root.setAttribute('lang', lang);
                 }
+                if (['blue', 'pink', 'green', 'orange'].indexOf(accent) !== -1) {
+                    root.setAttribute('data-accent', accent);
+                }
+                if (get('tommy-fx') === 'off') { root.classList.add('no-fx'); }
+                if (get('tommy-motion') === 'off') { root.classList.add('no-motion'); }
+                if (get('tommy-motion') === 'on') { root.classList.add('motion-on'); }
             } catch (e) {}
         })();
     </script>
@@ -41,31 +53,132 @@
     </div>
 
     <div class="topbar">
-        <button class="top-button" id="lang-button" type="button" data-i18n-aria="langAria" data-i18n-title="langAria">
-            <i data-lucide="languages"></i>
-            <span class="lang-switch">
-                <span class="lang-option" data-lang-option="de">DE</span>
-                <span class="lang-sep">/</span>
-                <span class="lang-option" data-lang-option="en">EN</span>
-            </span>
-        </button>
+        <div class="settings">
+            <button class="top-button icon-only" id="settings-button" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="settings-panel" data-i18n-aria="settingsAria" data-i18n-title="settingsAria">
+                <i data-lucide="settings"></i>
+            </button>
 
-        <button class="top-button icon-only" id="theme-button" type="button" data-i18n-aria="themeAria" data-i18n-title="themeAria">
-            <i data-lucide="sun" class="theme-sun"></i>
-            <i data-lucide="moon" class="theme-moon"></i>
-        </button>
+            <div class="settings-panel" id="settings-panel" role="dialog" aria-labelledby="settings-title" aria-hidden="true">
+                <div class="settings-head">
+                    <h2 id="settings-title" data-i18n="settingsTitle">Einstellungen</h2>
+                </div>
+
+                <div class="setting-row">
+                    <span class="setting-label"><i data-lucide="languages"></i><span data-i18n="setLanguage">Sprache</span></span>
+                    <div class="seg" role="group" data-i18n-aria="setLanguage">
+                        <button type="button" class="seg-btn" data-lang-option="de" aria-pressed="false">DE</button>
+                        <button type="button" class="seg-btn" data-lang-option="en" aria-pressed="false">EN</button>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <span class="setting-label"><i data-lucide="sun-moon"></i><span data-i18n="setTheme">Design</span></span>
+                    <div class="seg" role="group" data-i18n-aria="setTheme">
+                        <button type="button" class="seg-btn seg-icon" data-theme-option="light" aria-pressed="false" data-i18n-aria="themeLight" data-i18n-title="themeLight"><i data-lucide="sun"></i></button>
+                        <button type="button" class="seg-btn seg-icon" data-theme-option="dark" aria-pressed="false" data-i18n-aria="themeDark" data-i18n-title="themeDark"><i data-lucide="moon"></i></button>
+                        <button type="button" class="seg-btn seg-icon" data-theme-option="auto" aria-pressed="false" data-i18n-aria="themeAuto" data-i18n-title="themeAuto"><i data-lucide="monitor"></i></button>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <span class="setting-label"><i data-lucide="palette"></i><span data-i18n="setAccent">Akzentfarbe</span></span>
+                    <div class="swatches" role="group" data-i18n-aria="setAccent">
+                        <button type="button" class="swatch" data-accent-option="violet" style="--sw:#8b5cf6" aria-pressed="false" data-i18n-aria="accentViolet" data-i18n-title="accentViolet"></button>
+                        <button type="button" class="swatch" data-accent-option="blue" style="--sw:#3b82f6" aria-pressed="false" data-i18n-aria="accentBlue" data-i18n-title="accentBlue"></button>
+                        <button type="button" class="swatch" data-accent-option="pink" style="--sw:#ec4899" aria-pressed="false" data-i18n-aria="accentPink" data-i18n-title="accentPink"></button>
+                        <button type="button" class="swatch" data-accent-option="green" style="--sw:#10b981" aria-pressed="false" data-i18n-aria="accentGreen" data-i18n-title="accentGreen"></button>
+                        <button type="button" class="swatch" data-accent-option="orange" style="--sw:#f97316" aria-pressed="false" data-i18n-aria="accentOrange" data-i18n-title="accentOrange"></button>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <span class="setting-label"><i data-lucide="sparkles"></i><span data-i18n="setFx">Hintergrund-Effekte</span></span>
+                    <button type="button" class="switch" id="switch-fx" role="switch" aria-checked="true" data-i18n-aria="setFx"><span class="switch-knob"></span></button>
+                </div>
+
+                <div class="setting-row">
+                    <span class="setting-label"><i data-lucide="zap"></i><span data-i18n="setMotion">Animationen</span></span>
+                    <button type="button" class="switch" id="switch-motion" role="switch" aria-checked="true" data-i18n-aria="setMotion"><span class="switch-knob"></span></button>
+                </div>
+
+                <div class="setting-row">
+                    <span class="setting-label"><i data-lucide="headphones"></i><span data-i18n="setAutoplay">Musik beim Betreten</span></span>
+                    <button type="button" class="switch" id="switch-autoplay" role="switch" aria-checked="true" data-i18n-aria="setAutoplay"><span class="switch-knob"></span></button>
+                </div>
+
+                <button type="button" class="settings-reset" id="settings-reset">
+                    <i data-lucide="rotate-ccw"></i>
+                    <span data-i18n="setReset">Zurücksetzen</span>
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- Willkommen-Screen -->
     <div class="welcome-screen" id="welcome-screen">
+        <button class="top-button info-button" id="info-button" type="button" aria-haspopup="dialog" aria-controls="book-overlay" data-i18n-aria="infoAria" data-i18n-title="infoAria">
+            <i data-lucide="book-open"></i>
+            <span data-i18n="infoButton">Info</span>
+        </button>
+
         <div class="welcome-content">
             <div class="welcome-logo">T</div>
             <h1 data-i18n="welcomeTitle">Willkommen</h1>
             <p data-i18n="welcomeText">Klicke zum Betreten</p>
             <button class="enter-button" id="enter-button" type="button">
                 <span data-i18n="enter">Seite betreten</span>
-                <i data-lucide="arrow-right"></i>
+                <i data-lucide="door-open"></i>
             </button>
+        </div>
+    </div>
+
+    <!-- Info-Buch -->
+    <div class="book-overlay" id="book-overlay" aria-hidden="true">
+        <div class="book" id="book" role="dialog" aria-modal="true" aria-labelledby="book-title">
+            <button class="book-close" id="book-close" type="button" data-i18n-aria="bookClose" data-i18n-title="bookClose">
+                <i data-lucide="x"></i>
+            </button>
+
+            <div class="book-pages">
+                <section class="book-page active" data-page="0">
+                    <span class="book-icon"><i data-lucide="book-open"></i></span>
+                    <h2 id="book-title" data-i18n="book1Title">Was ist das hier?</h2>
+                    <p data-i18n="book1Text">Das ist meine Link-Seite. Hier findest du meine Projekte, Communities und Links an einem Ort, statt verstreut auf lauter einzelnen Seiten.</p>
+                </section>
+
+                <section class="book-page" data-page="1">
+                    <span class="book-icon"><i data-lucide="layout-grid"></i></span>
+                    <h2 data-i18n="book2Title">Was gibt es zu sehen?</h2>
+                    <p data-i18n="book2Text">Meine Projekte, Gaming-Communities, der Hoster meiner Discord Bots und mein Discord-Status live. Klapp eine Karte auf, dann siehst du mehr Details und weitere Links.</p>
+                </section>
+
+                <section class="book-page" data-page="2">
+                    <span class="book-icon"><i data-lucide="sliders-horizontal"></i></span>
+                    <h2 data-i18n="book3Title">Gut zu wissen</h2>
+                    <p data-i18n="book3Text">Beim Betreten läuft Musik von NEFFEX. Pausieren oder leiser machen kannst du im Player. Über das Zahnrad oben rechts änderst du Sprache, Design, Akzentfarbe und mehr.</p>
+                </section>
+
+                <section class="book-page" data-page="3">
+                    <span class="book-icon"><i data-lucide="shield-check"></i></span>
+                    <h2 data-i18n="book4Title">Datenschutz</h2>
+                    <p data-i18n="book4Text">Deine Einstellungen werden nur lokal in deinem Browser gespeichert. Der Discord-Status wird live über die Lanyard-API abgefragt.</p>
+                </section>
+            </div>
+
+            <div class="book-nav">
+                <button class="book-arrow" id="book-prev" type="button" data-i18n-aria="bookPrev" data-i18n-title="bookPrev">
+                    <i data-lucide="chevron-left"></i>
+                </button>
+                <div class="book-dots" id="book-dots" aria-hidden="true">
+                    <span class="book-dot active"></span>
+                    <span class="book-dot"></span>
+                    <span class="book-dot"></span>
+                    <span class="book-dot"></span>
+                </div>
+                <button class="book-arrow" id="book-next" type="button" data-i18n-aria="bookNext" data-i18n-title="bookNext">
+                    <i data-lucide="chevron-right"></i>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -80,7 +193,7 @@
             <h1>Tommy</h1>
 
             <p class="profile-location">
-                <i data-lucide="map-pin"></i>
+                <i data-lucide="mountain"></i>
                 <span data-i18n="location">17 Jahre · Österreich</span>
             </p>
 
@@ -92,8 +205,8 @@
 
             <div class="presence-activity" id="presence-activity" hidden>
                 <i data-lucide="gamepad-2" class="act-icon act-game"></i>
-                <i data-lucide="music" class="act-icon act-spotify"></i>
-                <i data-lucide="message-square" class="act-icon act-custom"></i>
+                <i data-lucide="headphones" class="act-icon act-spotify"></i>
+                <i data-lucide="message-square-text" class="act-icon act-custom"></i>
                 <span id="presence-activity-text"></span>
             </div>
 
@@ -113,7 +226,7 @@
                     data-i18n-aria="statusAria"
                     data-i18n-title="statusAria"
                 >
-                    <i data-lucide="activity"></i>
+                    <i data-lucide="signal"></i>
                 </a>
 
                 <a
@@ -124,7 +237,7 @@
                     data-i18n-aria="discordProfileAria"
                     data-i18n-title="discordProfileAria"
                 >
-                    <i data-lucide="message-circle"></i>
+                    <i data-lucide="user-round"></i>
                 </a>
             </div>
         </section>
@@ -155,7 +268,7 @@
                         data-i18n-aria="soundcloudAria"
                     >
                         SoundCloud
-                        <i data-lucide="external-link"></i>
+                        <i data-lucide="arrow-up-right"></i>
                     </a>
                 </div>
 
@@ -232,7 +345,10 @@
 
                             <div class="card-body">
                                 <div class="project-title-row">
-                                    <h3>Core3D</h3>
+                                    <h3 class="title-with-icon">
+                                        <i data-lucide="printer"></i>
+                                        <span>Core3D</span>
+                                    </h3>
                                     <span class="status active" data-i18n="statusCommunity">Community</span>
                                 </div>
 
@@ -253,11 +369,11 @@
                         <div class="card-links project-links">
                             <a class="project-link" href="https://discord.gg/33mb9W3KgB" target="_blank" rel="noopener noreferrer">
                                 <span data-i18n="openDiscord">Discord öffnen</span>
-                                <i data-lucide="arrow-right"></i>
+                                <i data-lucide="arrow-up-right"></i>
                             </a>
 
                             <a class="project-link" href="https://www.youtube.com/@Core3D_Print" target="_blank" rel="noopener noreferrer">
-                                <i data-lucide="circle-play"></i>
+                                <i data-lucide="clapperboard"></i>
                                 <span>YouTube</span>
                             </a>
                         </div>
@@ -317,7 +433,10 @@
 
                             <div class="card-body">
                                 <div class="project-title-row">
-                                    <h3>EAS</h3>
+                                    <h3 class="title-with-icon">
+                                        <i data-lucide="drama"></i>
+                                        <span>EAS</span>
+                                    </h3>
                                     <span class="status development" data-i18n="statusTeam">Im Team</span>
                                 </div>
 
@@ -338,7 +457,7 @@
                         <div class="card-links project-links">
                             <a class="project-link" href="https://discord.gg/pQCr73nwWY" target="_blank" rel="noopener noreferrer">
                                 <span data-i18n="joinDiscord">Discord beitreten</span>
-                                <i data-lucide="arrow-right"></i>
+                                <i data-lucide="arrow-up-right"></i>
                             </a>
                         </div>
 
@@ -382,7 +501,7 @@
                             <div class="card-body">
                                 <div class="project-title-row">
                                     <h3 class="title-with-icon">
-                                        <i data-lucide="tree-pine"></i>
+                                        <i data-lucide="truck"></i>
                                         <span>Fichtelhillz Trucker</span>
                                     </h3>
                                     <span class="status development" data-i18n="statusMember">Mitglied</span>
@@ -406,7 +525,7 @@
                         <div class="card-links project-links">
                             <a class="project-link" href="https://discord.gg/2WqvykHESn" target="_blank" rel="noopener noreferrer">
                                 <span data-i18n="joinDiscord">Discord beitreten</span>
-                                <i data-lucide="arrow-right"></i>
+                                <i data-lucide="arrow-up-right"></i>
                             </a>
                         </div>
 
@@ -429,11 +548,11 @@
                                     <div class="link-group-title" data-i18n="groupChannels">Kanäle</div>
                                     <div class="link-grid">
                                         <a class="link-chip" href="https://www.youtube.com/@fichtelhillztrucker" target="_blank" rel="noopener noreferrer">
-                                            <i data-lucide="circle-play"></i>
+                                            <i data-lucide="clapperboard"></i>
                                             <span>YouTube</span>
                                         </a>
                                         <a class="link-chip" href="https://www.twitch.tv/fichtelhillztrucker" target="_blank" rel="noopener noreferrer">
-                                            <i data-lucide="tv"></i>
+                                            <i data-lucide="radio"></i>
                                             <span>Twitch</span>
                                         </a>
                                     </div>
@@ -472,7 +591,10 @@
 
                             <div class="card-body">
                                 <div class="project-title-row">
-                                    <h3>Serverix</h3>
+                                    <h3 class="title-with-icon">
+                                        <i data-lucide="server"></i>
+                                        <span>Serverix</span>
+                                    </h3>
                                     <span class="status active" data-i18n="statusHost">Hoster</span>
                                 </div>
 
@@ -491,7 +613,7 @@
                         <div class="card-links project-links">
                             <a class="project-link" href="https://discord.gg/Et9a3bzH7v" target="_blank" rel="noopener noreferrer">
                                 <span data-i18n="joinDiscord">Discord beitreten</span>
-                                <i data-lucide="arrow-right"></i>
+                                <i data-lucide="arrow-up-right"></i>
                             </a>
                         </div>
 
@@ -507,11 +629,11 @@
                                             <span data-i18n="linkWebsite">Offizielle Seite</span>
                                         </a>
                                         <a class="link-chip" href="https://status.serverix.host/" target="_blank" rel="noopener noreferrer">
-                                            <i data-lucide="activity"></i>
+                                            <i data-lucide="heart-pulse"></i>
                                             <span data-i18n="linkStatus">Status von Serverix</span>
                                         </a>
                                         <a class="link-chip" href="https://whatsapp.com/channel/0029VbCDpfH35fM0pUsaN91C" target="_blank" rel="noopener noreferrer">
-                                            <i data-lucide="message-circle"></i>
+                                            <i data-lucide="messages-square"></i>
                                             <span data-i18n="linkWhatsapp">WhatsApp-Kanal von Serverix</span>
                                         </a>
                                     </div>
@@ -519,15 +641,15 @@
                                     <div class="link-group-title" data-i18n="groupLegal">Rechtliches des Hosters</div>
                                     <div class="link-grid">
                                         <a class="link-chip" href="https://serverix.host/impressum" target="_blank" rel="noopener noreferrer">
-                                            <i data-lucide="file-text"></i>
+                                            <i data-lucide="building-2"></i>
                                             <span data-i18n="linkImprint">Impressum</span>
                                         </a>
                                         <a class="link-chip" href="https://serverix.host/datenschutz" target="_blank" rel="noopener noreferrer">
-                                            <i data-lucide="shield-check"></i>
+                                            <i data-lucide="lock-keyhole"></i>
                                             <span data-i18n="linkPrivacy">Datenschutz</span>
                                         </a>
                                         <a class="link-chip" href="https://serverix.host/agb" target="_blank" rel="noopener noreferrer">
-                                            <i data-lucide="scroll-text"></i>
+                                            <i data-lucide="file-signature"></i>
                                             <span data-i18n="linkTerms">AGB</span>
                                         </a>
                                     </div>
@@ -556,22 +678,22 @@
                 <div class="collapse-inner">
                     <div class="skills">
                         <div class="card skill">
-                            <span class="skill-icon"><i data-lucide="braces"></i></span>
+                            <span class="skill-icon"><i data-lucide="code-xml"></i></span>
                             <span>JavaScript</span>
                         </div>
 
                         <div class="card skill">
-                            <span class="skill-icon"><i data-lucide="terminal"></i></span>
+                            <span class="skill-icon"><i data-lucide="square-terminal"></i></span>
                             <span>Python</span>
                         </div>
 
                         <div class="card skill">
-                            <span class="skill-icon"><i data-lucide="bot"></i></span>
+                            <span class="skill-icon"><i data-lucide="bot-message-square"></i></span>
                             <span>Discord Development</span>
                         </div>
 
                         <div class="card skill">
-                            <span class="skill-icon"><i data-lucide="gamepad-2"></i></span>
+                            <span class="skill-icon"><i data-lucide="joystick"></i></span>
                             <span data-i18n="skillGaming">Zocken</span>
                         </div>
                     </div>
