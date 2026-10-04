@@ -1,6 +1,6 @@
 'use strict';
 
-/* Discord-Status über die Lanyard API */
+
 (function () {
     const USER_ID = '881206091009122406';
     const API_URL = `https://api.lanyard.rest/v1/users/${USER_ID}`;
