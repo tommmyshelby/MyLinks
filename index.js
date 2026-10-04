@@ -10,8 +10,36 @@ const music = {
 
 const translations = {
     de: {
-        langAria: 'Sprache wechseln',
-        themeAria: 'Hell/Dunkel wechseln',
+        settingsAria: 'Einstellungen öffnen',
+        settingsTitle: 'Einstellungen',
+        setLanguage: 'Sprache',
+        setTheme: 'Design',
+        themeLight: 'Hell',
+        themeDark: 'Dunkel',
+        themeAuto: 'System',
+        setAccent: 'Akzentfarbe',
+        accentViolet: 'Violett',
+        accentBlue: 'Blau',
+        accentPink: 'Pink',
+        accentGreen: 'Grün',
+        accentOrange: 'Orange',
+        setFx: 'Hintergrund-Effekte',
+        setMotion: 'Animationen',
+        setAutoplay: 'Musik beim Betreten',
+        setReset: 'Zurücksetzen',
+        infoButton: 'Info',
+        infoAria: 'Infos zu dieser Seite',
+        bookClose: 'Schließen',
+        bookPrev: 'Vorherige Seite',
+        bookNext: 'Nächste Seite',
+        book1Title: 'Was ist das hier?',
+        book1Text: 'Das ist meine Link-Seite. Hier findest du meine Projekte, Communities und Links an einem Ort, statt verstreut auf lauter einzelnen Seiten.',
+        book2Title: 'Was gibt es zu sehen?',
+        book2Text: 'Meine Projekte, Gaming-Communities, der Hoster meiner Discord Bots und mein Discord-Status live. Klapp eine Karte auf, dann siehst du mehr Details und weitere Links.',
+        book3Title: 'Gut zu wissen',
+        book3Text: 'Beim Betreten läuft Musik von NEFFEX. Pausieren oder leiser machen kannst du im Player. Über das Zahnrad oben rechts änderst du Sprache, Design, Akzentfarbe und mehr.',
+        book4Title: 'Datenschutz',
+        book4Text: 'Deine Einstellungen werden nur lokal in deinem Browser gespeichert. Der Discord-Status wird live über die Lanyard-API abgefragt.',
         welcomeTitle: 'Willkommen',
         welcomeText: 'Klicke zum Betreten',
         enter: 'Seite betreten',
@@ -71,8 +99,36 @@ const translations = {
         serverixMore: 'Serverix ist der Hoster, bei dem meine Discord Bots laufen. Die Links hier gehören zum Hoster.'
     },
     en: {
-        langAria: 'Change language',
-        themeAria: 'Toggle light/dark mode',
+        settingsAria: 'Open settings',
+        settingsTitle: 'Settings',
+        setLanguage: 'Language',
+        setTheme: 'Theme',
+        themeLight: 'Light',
+        themeDark: 'Dark',
+        themeAuto: 'System',
+        setAccent: 'Accent color',
+        accentViolet: 'Violet',
+        accentBlue: 'Blue',
+        accentPink: 'Pink',
+        accentGreen: 'Green',
+        accentOrange: 'Orange',
+        setFx: 'Background effects',
+        setMotion: 'Animations',
+        setAutoplay: 'Music on entry',
+        setReset: 'Reset',
+        infoButton: 'Info',
+        infoAria: 'About this page',
+        bookClose: 'Close',
+        bookPrev: 'Previous page',
+        bookNext: 'Next page',
+        book1Title: 'What is this?',
+        book1Text: 'This is my link page. You can find my projects, communities and links in one place instead of scattered across many different sites.',
+        book2Title: 'What is there to see?',
+        book2Text: 'My projects, gaming communities, the host of my Discord bots and my live Discord status. Open a card to see more details and further links.',
+        book3Title: 'Good to know',
+        book3Text: 'Music by NEFFEX plays when you enter. You can pause it or turn it down in the player. The gear icon in the top right lets you change language, theme, accent color and more.',
+        book4Title: 'Privacy',
+        book4Text: 'Your settings are only stored locally in your browser. The Discord status is requested live through the Lanyard API.',
         welcomeTitle: 'Welcome',
         welcomeText: 'Click to enter',
         enter: 'Enter site',
@@ -147,8 +203,10 @@ const els = {
     duration: $('duration'),
     title: $('track-title'),
     artist: $('track-artist'),
-    langButton: $('lang-button'),
-    themeButton: $('theme-button')
+    settingsButton: $('settings-button'),
+    settingsPanel: $('settings-panel'),
+    infoButton: $('info-button'),
+    bookOverlay: $('book-overlay')
 };
 
 const root = document.documentElement;
@@ -194,9 +252,7 @@ function applyLanguage(lang) {
         el.setAttribute('title', t(el.dataset.i18nTitle));
     });
 
-    document.querySelectorAll('[data-lang-option]').forEach((el) => {
-        el.classList.toggle('active', el.dataset.langOption === currentLang);
-    });
+    markLanguage(currentLang);
 
     els.artist.textContent = audioError ? t('musicMissing') : music.artist;
 
@@ -206,8 +262,16 @@ function applyLanguage(lang) {
 
 let langTimer = null;
 
-function toggleLanguage() {
-    const next = currentLang === 'de' ? 'en' : 'de';
+function markLanguage(lang) {
+    document.querySelectorAll('[data-lang-option]').forEach((el) => {
+        el.setAttribute('aria-pressed', String(el.dataset.langOption === lang));
+    });
+}
+
+function setLanguage(next) {
+    if (next === currentLang) {
+        return;
+    }
 
     writeStorage('tommy-lang', next);
 
@@ -216,9 +280,7 @@ function toggleLanguage() {
         return;
     }
 
-    document.querySelectorAll('[data-lang-option]').forEach((el) => {
-        el.classList.toggle('active', el.dataset.langOption === next);
-    });
+    markLanguage(next);
 
     clearTimeout(langTimer);
     document.body.classList.add('i18n-out');
@@ -230,8 +292,22 @@ function toggleLanguage() {
 }
 
 
-function applyTheme(theme) {
-    const value = theme === 'light' ? 'light' : 'dark';
+const THEMES = ['light', 'dark', 'auto'];
+const ACCENTS = ['violet', 'blue', 'pink', 'green', 'orange'];
+const lightQuery = window.matchMedia('(prefers-color-scheme: light)');
+
+let themePref = THEMES.includes(readStorage('tommy-theme')) ? readStorage('tommy-theme') : 'dark';
+
+function resolveTheme(pref) {
+    if (pref === 'auto') {
+        return lightQuery.matches ? 'light' : 'dark';
+    }
+
+    return pref === 'light' ? 'light' : 'dark';
+}
+
+function applyTheme(pref) {
+    const value = resolveTheme(pref);
     const meta = document.querySelector('meta[name="theme-color"]');
 
     root.setAttribute('data-theme', value);
@@ -239,21 +315,249 @@ function applyTheme(theme) {
     if (meta) {
         meta.setAttribute('content', value === 'light' ? '#f4f3fa' : '#08090c');
     }
+
+    document.querySelectorAll('[data-theme-option]').forEach((el) => {
+        el.setAttribute('aria-pressed', String(el.dataset.themeOption === pref));
+    });
 }
 
 let themeTimer = null;
 
-function toggleTheme() {
-    const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-
-    writeStorage('tommy-theme', next);
+function setTheme(pref) {
+    themePref = THEMES.includes(pref) ? pref : 'dark';
+    writeStorage('tommy-theme', themePref);
 
     root.classList.add('theme-fade');
-    applyTheme(next);
+    applyTheme(themePref);
 
     clearTimeout(themeTimer);
     themeTimer = setTimeout(() => root.classList.remove('theme-fade'), 750);
 }
+
+lightQuery.addEventListener('change', () => {
+    if (themePref === 'auto') {
+        applyTheme('auto');
+    }
+});
+
+
+/* Akzentfarbe, Effekte, Animationen, Musik */
+
+let accentPref = ACCENTS.includes(readStorage('tommy-accent')) ? readStorage('tommy-accent') : 'violet';
+let fxOn = readStorage('tommy-fx') !== 'off';
+let motionOn = readStorage('tommy-motion') ? readStorage('tommy-motion') === 'on' : !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let autoplayOn = readStorage('tommy-autoplay') !== 'off';
+
+function setAccent(name) {
+    accentPref = ACCENTS.includes(name) ? name : 'violet';
+    writeStorage('tommy-accent', accentPref);
+
+    if (accentPref === 'violet') {
+        root.removeAttribute('data-accent');
+    } else {
+        root.setAttribute('data-accent', accentPref);
+    }
+
+    document.querySelectorAll('[data-accent-option]').forEach((el) => {
+        el.setAttribute('aria-pressed', String(el.dataset.accentOption === accentPref));
+    });
+
+    updateRange(els.volume);
+    updateRange(els.seek);
+}
+
+function setFx(on) {
+    fxOn = on;
+    writeStorage('tommy-fx', on ? 'on' : 'off');
+    root.classList.toggle('no-fx', !on);
+    setSwitch('switch-fx', on);
+}
+
+function setMotion(on) {
+    motionOn = on;
+    writeStorage('tommy-motion', on ? 'on' : 'off');
+    root.classList.toggle('no-motion', !on);
+    root.classList.toggle('motion-on', on);
+    setSwitch('switch-motion', on);
+
+    reducedMotion = !on;
+    visualizerOff = !ENABLE_VISUALIZER || reducedMotion;
+
+    if (visualizerOff) {
+        bass = 0;
+        mid = 0;
+        lastBass = -1;
+        lastMid = -1;
+        setLevels(0, 0);
+    } else if (!els.audio.paused) {
+        setupAnalyser();
+        startVisualizer();
+    }
+}
+
+function setAutoplay(on) {
+    autoplayOn = on;
+    writeStorage('tommy-autoplay', on ? 'on' : 'off');
+    setSwitch('switch-autoplay', on);
+}
+
+function setSwitch(id, on) {
+    $(id).setAttribute('aria-checked', String(on));
+}
+
+function resetSettings() {
+    ['tommy-theme', 'tommy-accent', 'tommy-fx', 'tommy-motion', 'tommy-autoplay'].forEach((key) => {
+        try {
+            localStorage.removeItem(key);
+        } catch {
+            return;
+        }
+    });
+
+    setTheme('dark');
+    setAccent('violet');
+    setFx(true);
+    setMotion(!window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    setAutoplay(true);
+}
+
+
+/* Einstellungsmenü */
+
+function setPanel(open) {
+    els.settingsPanel.classList.toggle('open', open);
+    els.settingsPanel.setAttribute('aria-hidden', String(!open));
+    els.settingsButton.setAttribute('aria-expanded', String(open));
+}
+
+function setupSettings() {
+    els.settingsButton.addEventListener('click', () => {
+        setPanel(!els.settingsPanel.classList.contains('open'));
+    });
+
+    document.addEventListener('click', (event) => {
+        if (els.settingsPanel.classList.contains('open') && !event.target.closest('.settings')) {
+            setPanel(false);
+        }
+    });
+
+    document.querySelectorAll('[data-lang-option]').forEach((el) => {
+        el.addEventListener('click', () => setLanguage(el.dataset.langOption));
+    });
+
+    document.querySelectorAll('[data-theme-option]').forEach((el) => {
+        el.addEventListener('click', () => setTheme(el.dataset.themeOption));
+    });
+
+    document.querySelectorAll('[data-accent-option]').forEach((el) => {
+        el.addEventListener('click', () => setAccent(el.dataset.accentOption));
+    });
+
+    $('switch-fx').addEventListener('click', () => setFx(!fxOn));
+    $('switch-motion').addEventListener('click', () => setMotion(!motionOn));
+    $('switch-autoplay').addEventListener('click', () => setAutoplay(!autoplayOn));
+    $('settings-reset').addEventListener('click', resetSettings);
+
+    setFx(fxOn);
+    setSwitch('switch-motion', motionOn);
+    setSwitch('switch-autoplay', autoplayOn);
+    setAccent(accentPref);
+}
+
+
+/* Info-Buch */
+
+const book = {
+    page: 0,
+    lastFocus: null
+};
+
+function showBookPage(index) {
+    const pages = [...document.querySelectorAll('.book-page')];
+    const dots = [...document.querySelectorAll('.book-dot')];
+    const last = pages.length - 1;
+
+    book.page = Math.min(Math.max(index, 0), last);
+
+    pages.forEach((page, i) => {
+        page.classList.toggle('active', i === book.page);
+        page.classList.toggle('leaving', i < book.page);
+    });
+
+    dots.forEach((dot, i) => dot.classList.toggle('active', i === book.page));
+
+    $('book-prev').disabled = book.page === 0;
+    $('book-next').disabled = book.page === last;
+}
+
+function openBook() {
+    setPanel(false);
+    book.lastFocus = document.activeElement;
+    showBookPage(0);
+
+    els.bookOverlay.classList.add('open');
+    els.bookOverlay.setAttribute('aria-hidden', 'false');
+    $('book-close').focus({ preventScroll: true });
+}
+
+function closeBook() {
+    els.bookOverlay.classList.remove('open');
+    els.bookOverlay.setAttribute('aria-hidden', 'true');
+
+    if (book.lastFocus && document.contains(book.lastFocus)) {
+        book.lastFocus.focus({ preventScroll: true });
+    }
+}
+
+function setupBook() {
+    els.infoButton.addEventListener('click', openBook);
+    $('book-close').addEventListener('click', closeBook);
+    $('book-prev').addEventListener('click', () => showBookPage(book.page - 1));
+    $('book-next').addEventListener('click', () => showBookPage(book.page + 1));
+
+    els.bookOverlay.addEventListener('click', (event) => {
+        if (event.target === els.bookOverlay) {
+            closeBook();
+        }
+    });
+}
+
+document.addEventListener('keydown', (event) => {
+    const bookOpen = els.bookOverlay.classList.contains('open');
+
+    if (event.key === 'Escape') {
+        if (bookOpen) {
+            closeBook();
+        } else if (els.settingsPanel.classList.contains('open')) {
+            setPanel(false);
+            els.settingsButton.focus();
+        }
+
+        return;
+    }
+
+    if (!bookOpen) {
+        return;
+    }
+
+    if (event.key === 'ArrowRight') {
+        showBookPage(book.page + 1);
+    } else if (event.key === 'ArrowLeft') {
+        showBookPage(book.page - 1);
+    } else if (event.key === 'Tab') {
+        const focusable = [...els.bookOverlay.querySelectorAll('button:not(:disabled)')];
+        const first = focusable[0];
+        const lastEl = focusable[focusable.length - 1];
+
+        if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            lastEl.focus();
+        } else if (!event.shiftKey && document.activeElement === lastEl) {
+            event.preventDefault();
+            first.focus();
+        }
+    }
+});
 
 
 /* Einklappen / Aufklappen */
@@ -319,7 +623,7 @@ function updateRange(element) {
     const max = Number(element.max) || 100;
     const percent = ((Number(element.value) - min) / (max - min)) * 100;
 
-    element.style.background = `linear-gradient(to right, #a78bfa 0%, #8b5cf6 ${percent}%, var(--track) ${percent}%, var(--track) 100%)`;
+    element.style.background = `linear-gradient(to right, var(--accent-soft) 0%, var(--accent) ${percent}%, var(--track) ${percent}%, var(--track) 100%)`;
 }
 
 function loadVolume() {
@@ -409,7 +713,7 @@ function updateProgress() {
 
 const ENABLE_VISUALIZER = true;
 
-const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let reducedMotion = !motionOn;
 const backgroundEl = document.querySelector('.background');
 
 let audioContext = null;
@@ -617,8 +921,10 @@ function enterWebsite() {
     scrollToTop();
     els.welcomeScreen.classList.add('hidden');
 
-    setupAnalyser();
-    els.audio.play().catch(() => {});
+    if (autoplayOn) {
+        setupAnalyser();
+        els.audio.play().catch(() => {});
+    }
 }
 
 function init() {
@@ -634,14 +940,14 @@ function init() {
 
     lucide.createIcons();
 
-    applyTheme(root.getAttribute('data-theme'));
+    applyTheme(themePref);
     initAudio();
     applyLanguage(currentLang);
+    setupSettings();
+    setupBook();
     setupSections();
     setupCards();
 
-    els.langButton.addEventListener('click', toggleLanguage);
-    els.themeButton.addEventListener('click', toggleTheme);
     els.enterButton.addEventListener('click', enterWebsite, { once: true });
 }
 
