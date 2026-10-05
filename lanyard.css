@@ -1,0 +1,95 @@
+
+.online-dot {
+    background: #6b7280;
+    box-shadow: none;
+    transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+
+.online-dot[data-status="online"] {
+    background: #22c55e;
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.24);
+}
+
+.online-dot[data-status="idle"] {
+    background: #f59e0b;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.22);
+}
+
+.online-dot[data-status="dnd"] {
+    background: #ef4444;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.22);
+}
+
+.presence {
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--text-3);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.presence[hidden],
+.presence-activity[hidden] {
+    display: none;
+}
+
+.presence-dot {
+    flex: 0 0 auto;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #6b7280;
+    transition: background 0.4s ease;
+}
+
+.presence[data-status="online"] .presence-dot {
+    background: #22c55e;
+}
+
+.presence[data-status="idle"] .presence-dot {
+    background: #f59e0b;
+}
+
+.presence[data-status="dnd"] .presence-dot {
+    background: #ef4444;
+}
+
+.presence-activity {
+    width: fit-content;
+    max-width: 100%;
+    margin: 10px auto 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 7px 13px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text-2);
+    background: var(--chip-bg);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.presence-activity span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.presence-activity .act-icon {
+    display: none;
+    width: 14px;
+    height: 14px;
+    color: var(--accent-text);
+}
+
+.presence-activity[data-kind="game"] .act-game,
+.presence-activity[data-kind="spotify"] .act-spotify,
+.presence-activity[data-kind="custom"] .act-custom {
+    display: block;
+}
