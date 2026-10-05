@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="de" data-theme="dark" data-accent="violet">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0b10">
+  <meta name="description" content="Tommy – Discord Development, JavaScript, Python und meine Projekte.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; media-src 'self'; connect-src 'self' https://api.lanyard.rest; font-src 'self' data:; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
+  <title>Tommy — Links</title>
+  <script>
+    (() => {
+      try {
+        const g = localStorage.getItem.bind(localStorage);
+        const theme = g('tommy-theme');
+        const lang = g('tommy-lang');
+        const accent = g('tommy-accent');
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
+        else if (theme === 'auto') document.documentElement.dataset.theme = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        if (lang === 'de' || lang === 'en') document.documentElement.lang = lang;
+        if (['violet','blue','pink','green','orange'].includes(accent)) document.documentElement.dataset.accent = accent;
+        if (g('tommy-motion') === 'off') document.documentElement.classList.add('no-motion');
+      } catch (_) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="lanyard.css">
+</head>
+<body class="locked">
+  <div class="ambient" aria-hidden="true"><span></span><span></span></div>
+
+  <header class="topbar">
+    <button class="icon-button" id="info-button" type="button" aria-label="Infos" title="Infos"><i data-lucide="circle-help"></i></button>
+    <div class="settings-wrap">
+      <button class="icon-button" id="settings-button" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="settings-panel" aria-label="Einstellungen" title="Einstellungen"><i data-lucide="settings-2"></i></button>
+      <aside class="settings-panel" id="settings-panel" aria-hidden="true">
+        <div class="settings-title"><div><strong data-i18n="settingsTitle">Einstellungen</strong><span data-i18n="settingsHint">Nur lokal in deinem Browser</span></div><i data-lucide="sliders-horizontal"></i></div>
+        <div class="setting"><span><i data-lucide="languages"></i><b data-i18n="setLanguage">Sprache</b></span><div class="seg"><button data-lang="de">DE</button><button data-lang="en">EN</button></div></div>
+        <div class="setting"><span><i data-lucide="sun-moon"></i><b data-i18n="setTheme">Design</b></span><div class="seg"><button data-theme="light" title="Hell"><i data-lucide="sun"></i></button><button data-theme="dark" title="Dunkel"><i data-lucide="moon"></i></button><button data-theme="auto" title="System"><i data-lucide="monitor"></i></button></div></div>
+        <div class="setting"><span><i data-lucide="palette"></i><b data-i18n="setAccent">Akzent</b></span><div class="swatches"><button data-accent="violet" style="--sw:#8b5cf6"></button><button data-accent="blue" style="--sw:#3b82f6"></button><button data-accent="pink" style="--sw:#ec4899"></button><button data-accent="green" style="--sw:#10b981"></button><button data-accent="orange" style="--sw:#f97316"></button></div></div>
+        <div class="setting"><span><i data-lucide="sparkles"></i><b data-i18n="setFx">Hintergrund</b></span><button class="switch" id="fx-switch" role="switch"><span></span></button></div>
+        <div class="setting"><span><i data-lucide="move"></i><b data-i18n="setMotion">Animationen</b></span><button class="switch" id="motion-switch" role="switch"><span></span></button></div>
+        <div class="setting"><span><i data-lucide="music-2"></i><b data-i18n="setAutoplay">Musik beim Betreten</b></span><button class="switch" id="autoplay-switch" role="switch"><span></span></button></div>
+        <button class="reset" id="reset-settings"><i data-lucide="rotate-ccw"></i><span data-i18n="reset">Zurücksetzen</span></button>
+      </aside>
+    </div>
+  </header>
+
+  <main class="page" id="main">
+    <section class="profile card">
+      <div class="avatar-wrap"><img class="avatar" src="assets/images/profile.jpg" alt="Tommy" width="112" height="112"><span class="avatar-status" id="online-dot"></span></div>
+      <div class="eyebrow">TOMMY</div>
+      <h1>Tommy</h1>
+      <p class="location" data-i18n="location">17 Jahre · Österreich</p>
+      <div class="presence" id="presence" hidden><span class="presence-dot"></span><span id="presence-status">Offline</span></div>
+      <div class="presence-activity" id="presence-activity" hidden><i data-lucide="gamepad-2"></i><span id="presence-activity-text"></span></div>
+      <p class="bio" data-i18n="bio">Ich programmiere gerne und beschäftige mich hauptsächlich mit Discord Development, JavaScript und Python. Nebenbei arbeite ich an eigenen Projekten und probiere gerne neue Dinge aus.</p>
+      <div class="profile-actions">
+        <a class="primary-action" href="https://discord.com/users/881206091009122406" target="_blank" rel="noopener noreferrer"><i data-lucide="message-circle"></i><span>Discord</span><i data-lucide="arrow-up-right"></i></a>
+        <a class="secondary-action" href="https://systemy.betteruptime.com" target="_blank" rel="noopener noreferrer"><i data-lucide="activity"></i><span data-i18n="statusLink">Status</span></a>
+      </div>
+    </section>
+
+    <section class="music card">
+      <div class="music-icon"><i data-lucide="music-2"></i></div>
+      <div class="music-main"><div class="eyebrow" data-i18n="nowPlaying">NOW PLAYING</div><strong id="track-title">BURN THE BRIDGE</strong><span id="track-artist">NEFFEX</span></div>
+      <button class="play" id="play-button" type="button" aria-label="Musik abspielen"><i class="play-icon" data-lucide="play"></i><i class="pause-icon" data-lucide="pause"></i></button>
+      <div class="music-progress"><span id="current-time">0:00</span><input id="seek" type="range" min="0" max="100" value="0" step="0.1" aria-label="Musikposition"><span id="duration">0:00</span></div>
+      <button class="mute" id="volume-button" type="button" aria-label="Ton ausschalten"><i class="volume-on" data-lucide="volume-2"></i><i class="volume-off" data-lucide="volume-x"></i></button>
+      <input id="volume" class="volume" type="range" min="0" max="1" value="0.5" step="0.01" aria-label="Lautstärke">
+      <a class="soundcloud" href="https://soundcloud.com/neffexmusic/burn-the-bridge-copyright-free" target="_blank" rel="noopener noreferrer" aria-label="NEFFEX auf SoundCloud"><i data-lucide="external-link"></i></a>
+      <audio id="audio" preload="metadata" loop></audio>
+    </section>
+
+    <div class="section-list">
+      <section class="section"><button class="section-title" data-target="projects" aria-expanded="true"><span data-i18n="sectionProjects">Meine Projekte</span><i data-lucide="chevron-down"></i></button><div id="projects" class="section-content open">
+        <article class="project card">
+          <img src="assets/images/coreprofilbild.jpg" alt="Core3D" loading="lazy"><div class="project-content"><div class="project-top"><h2><i data-lucide="printer"></i>Core3D</h2><span class="status good" data-i18n="statusCommunity">Community</span></div><p data-i18n="coreText">Ein Server rund um 3D Design und 3D-Druck, den ich mit einem Freund betreibe.</p><div class="tags"><span>3D-Druck</span><span>Community</span><span>Leitung</span></div><div class="project-links"><a href="https://discord.gg/33mb9W3KgB" target="_blank" rel="noopener noreferrer"><span data-i18n="openDiscord">Discord öffnen</span><i data-lucide="arrow-up-right"></i></a><a href="https://www.youtube.com/@Core3D_Print" target="_blank" rel="noopener noreferrer"><i data-lucide="youtube"></i>YouTube</a></div><details><summary data-i18n="more">Mehr über Core3D</summary><p data-i18n="coreMore">Core3D dreht sich um 3D Design und 3D-Druck. Ich kümmere mich um die Leitung und den Aufbau der Community, mein Kumpel übernimmt die 3D-Arbeit.</p></details></div>
+        </article>
+      </div></section>
+
+      <section class="section"><button class="section-title" data-target="gaming" aria-expanded="true"><span data-i18n="sectionGaming">Gaming</span><i data-lucide="chevron-down"></i></button><div id="gaming" class="section-content open">
+        <article class="project card"><img src="assets/images/eas.jpg" alt="EAS" loading="lazy"><div class="project-content"><div class="project-top"><h2><i data-lucide="gamepad-2"></i>EAS</h2><span class="status dev" data-i18n="statusTeam">Im Team</span></div><p data-i18n="easText">Ein Roleplay-Projekt, bei dem ich Teil des Teams bin. Das Projekt befindet sich in Entwicklung.</p><div class="tags"><span>Roleplay</span><span>V2</span><span>Entwicklung</span></div><div class="project-links"><a href="https://discord.gg/pQCr73nwWY" target="_blank" rel="noopener noreferrer"><span data-i18n="joinDiscord">Discord beitreten</span><i data-lucide="arrow-up-right"></i></a></div><details><summary data-i18n="more">Mehr über EAS</summary><p data-i18n="easMore">EAS ist ein Roleplay-Projekt, das sich gerade in Entwicklung befindet (V2). Ich bin Teil des Teams und helfe mit, das Projekt voranzubringen.</p></details></div></article>
+        <article class="project card"><img src="assets/images/trucker.png" alt="Fichtelhillz Trucker" loading="lazy"><div class="project-content"><div class="project-top"><h2><i data-lucide="truck"></i>Fichtelhillz Trucker</h2><span class="status" data-i18n="statusMember">Mitglied</span></div><p data-i18n="truckerText">Eine Community rund ums Trucking in ETS2 mit Touren, Convoys und Austausch.</p><div class="tags"><span>ETS2</span><span>Trucking</span><span>Convoys</span></div><div class="project-links"><a href="https://discord.gg/2WqvykHESn" target="_blank" rel="noopener noreferrer"><span data-i18n="joinDiscord">Discord beitreten</span><i data-lucide="arrow-up-right"></i></a></div><details><summary data-i18n="more">Mehr über Fichtelhillz Trucker</summary><p data-i18n="truckerMore">Fichtelhillz Trucker ist eine Community für alle, die gerne ETS2 fahren. Neben Discord gibt es auch YouTube und Twitch.</p><div class="mini-links"><a href="https://www.youtube.com/@fichtelhillztrucker" target="_blank" rel="noopener noreferrer"><i data-lucide="youtube"></i>YouTube</a><a href="https://www.twitch.tv/fichtelhillztrucker" target="_blank" rel="noopener noreferrer"><i data-lucide="twitch"></i>Twitch</a></div></details></div></article>
+      </div></section>
+
+      <section class="section"><button class="section-title" data-target="hosting" aria-expanded="true"><span data-i18n="sectionHosting">Hosting</span><i data-lucide="chevron-down"></i></button><div id="hosting" class="section-content open">
+        <article class="project card"><img src="assets/images/serverixbanner.jpg" alt="Serverix" loading="lazy"><div class="project-content"><div class="project-top"><h2><i data-lucide="server"></i>Serverix</h2><span class="status good" data-i18n="statusHost">Hoster</span></div><p data-i18n="serverixText">Hier hoste ich meine Discord Bots. Du kannst dem Discord von Serverix beitreten.</p><div class="tags"><span>Hosting</span><span>Discord Bots</span></div><div class="project-links"><a href="https://discord.gg/Et9a3bzH7v" target="_blank" rel="noopener noreferrer"><span data-i18n="joinDiscord">Discord beitreten</span><i data-lucide="arrow-up-right"></i></a></div><details><summary data-i18n="more">Weitere Links</summary><div class="mini-links"><a href="https://serverix.host/" target="_blank" rel="noopener noreferrer"><i data-lucide="globe"></i><span data-i18n="linkWebsite">Website</span></a><a href="https://status.serverix.host/" target="_blank" rel="noopener noreferrer"><i data-lucide="heart-pulse"></i><span data-i18n="linkStatus">Status</span></a><a href="https://whatsapp.com/channel/0029VbCDpfH35fM0pUsaN91C" target="_blank" rel="noopener noreferrer"><i data-lucide="message-square"></i>WhatsApp</a><a href="https://serverix.host/impressum" target="_blank" rel="noopener noreferrer"><i data-lucide="scale"></i><span data-i18n="linkImprint">Impressum</span></a><a href="https://serverix.host/datenschutz" target="_blank" rel="noopener noreferrer"><i data-lucide="shield-check"></i><span data-i18n="linkPrivacy">Datenschutz</span></a><a href="https://serverix.host/agb" target="_blank" rel="noopener noreferrer"><i data-lucide="file-text"></i><span data-i18n="linkTerms">AGB</span></a></div></details></div></article>
+      </div></section>
+    </div>
+
+    <footer><span>© 2026 Tommy</span><span data-i18n="footerText">Made with code & coffee.</span></footer>
+  </main>
+
+  <div class="welcome" id="welcome-screen"><div class="welcome-card"><div class="welcome-mark">T</div><div class="eyebrow">TOMMY</div><h2 data-i18n="welcomeTitle">Willkommen</h2><p data-i18n="welcomeText">Klicke zum Betreten</p><button id="enter-button" class="enter"><span data-i18n="enter">Seite betreten</span><i data-lucide="arrow-right"></i></button></div><button class="welcome-info" id="welcome-info" type="button"><i data-lucide="circle-help"></i><span data-i18n="infoButton">Info</span></button></div>
+
+  <div class="modal" id="info-modal" aria-hidden="true"><div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="info-title"><button class="close" id="close-info" aria-label="Schließen"><i data-lucide="x"></i></button><div class="modal-icon"><i data-lucide="book-open"></i></div><div id="info-page"><h2 id="info-title"></h2><p id="info-text"></p></div><div class="modal-nav"><button id="info-prev" aria-label="Zurück"><i data-lucide="chevron-left"></i></button><div id="info-dots"></div><button id="info-next" aria-label="Weiter"><i data-lucide="chevron-right"></i></button></div></div></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js" defer></script>
+  <script src="script.js" defer></script>
+  <script src="lanyard.js" defer></script>
+</body>
+</html>
