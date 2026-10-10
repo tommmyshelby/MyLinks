@@ -1,4 +1,9 @@
+
 'use strict';
+
+/* =========================================================
+   TOMMY LINKS – KONFIGURATION
+========================================================= */
 
 const music = {
     title: 'BURN THE BRIDGE',
@@ -6,7 +11,6 @@ const music = {
     file: 'assets/audio/burn-the-bridge.mp3',
     defaultVolume: 0.5
 };
-
 
 const translations = {
     de: {
@@ -98,6 +102,7 @@ const translations = {
         truckerMore: 'Fichtelhillz Trucker ist eine Community für alle, die gerne ETS2 fahren, egal ob bei gemeinsamen Touren, in Convoys oder einfach zum Quatschen. Ich bin als Mitglied dabei. Neben Discord gibt es auch einen YouTube- und einen Twitch-Kanal.',
         serverixMore: 'Serverix ist der Hoster, bei dem meine Discord Bots laufen. Die Links hier gehören zum Hoster.'
     },
+
     en: {
         settingsAria: 'Open settings',
         settingsTitle: 'Settings',
@@ -189,7 +194,12 @@ const translations = {
     }
 };
 
+/* =========================================================
+   ELEMENTE UND GRUNDWERTE
+========================================================= */
+
 const $ = (id) => document.getElementById(id);
+const root = document.documentElement;
 
 const els = {
     welcomeScreen: $('welcome-screen'),
@@ -209,14 +219,12 @@ const els = {
     bookOverlay: $('book-overlay')
 };
 
-const root = document.documentElement;
-
 let lastVolume = music.defaultVolume;
 let audioError = false;
 let currentLang = root.getAttribute('lang') === 'en' ? 'en' : 'de';
 
 function t(key) {
-    return translations[currentLang][key] ?? translations.de[key] ?? key;
+    return translations[currentLang]?.[key] ?? translations.de[key] ?? key;
 }
 
 function readStorage(key) {
@@ -231,30 +239,44 @@ function writeStorage(key, value) {
     try {
         localStorage.setItem(key, value);
     } catch {
-        return;
+        // Die Seite funktioniert auch ohne lokalen Speicher.
     }
 }
 
+function removeStorage(key) {
+    try {
+        localStorage.removeItem(key);
+    } catch {
+        // Die Seite funktioniert auch ohne lokalen Speicher.
+    }
+}
+
+/* =========================================================
+   SPRACHE
+========================================================= */
 
 function applyLanguage(lang) {
     currentLang = lang === 'en' ? 'en' : 'de';
     root.setAttribute('lang', currentLang);
 
-    document.querySelectorAll('[data-i18n]').forEach((el) => {
-        el.textContent = t(el.dataset.i18n);
+    document.querySelectorAll('[data-i18n]').forEach((element) => {
+        const key = element.dataset.i18n;
+        element.textContent = t(key);
     });
 
-    document.querySelectorAll('[data-i18n-aria]').forEach((el) => {
-        el.setAttribute('aria-label', t(el.dataset.i18nAria));
+    document.querySelectorAll('[data-i18n-aria]').forEach((element) => {
+        element.setAttribute('aria-label', t(element.dataset.i18nAria));
     });
 
-    document.querySelectorAll('[data-i18n-title]').forEach((el) => {
-        el.setAttribute('title', t(el.dataset.i18nTitle));
+    document.querySelectorAll('[data-i18n-title]').forEach((element) => {
+        element.setAttribute('title', t(element.dataset.i18nTitle));
     });
 
     markLanguage(currentLang);
 
-    els.artist.textContent = audioError ? t('musicMissing') : music.artist;
+    if (els.artist) {
+        els.artist.textContent = audioError ? t('musicMissing') : music.artist;
+    }
 
     updatePlayButton();
     updateVolumeButton();
@@ -263,40 +285,61 @@ function applyLanguage(lang) {
 let langTimer = null;
 
 function markLanguage(lang) {
-    document.querySelectorAll('[data-lang-option]').forEach((el) => {
-        el.setAttribute('aria-pressed', String(el.dataset.langOption === lang));
+    document.querySelectorAll('[data-lang-option]').forEach((element) => {
+        element.setAttribute(
+            'aria-pressed',
+            String(element.dataset.langOption === lang)
+        );
     });
 }
 
 function setLanguage(next) {
-    if (next === currentLang) {
-        return;
-    }
+    if (next === currentLang) return;
 
-    writeStorage('tommy-lang', next);
+    const nextLanguage = next === 'en' ? 'en' : 'de';
+    writeStorage('tommy-lang', nextLanguage);
 
     if (reducedMotion) {
-        applyLanguage(next);
+        applyLanguage(nextLanguage);
         return;
     }
 
-    markLanguage(next);
-
+    markLanguage(nextLanguage);
     clearTimeout(langTimer);
     document.body.classList.add('i18n-out');
 
     langTimer = setTimeout(() => {
-        applyLanguage(next);
-        requestAnimationFrame(() => document.body.classList.remove('i18n-out'));
-    }, 220);
+        applyLanguage(nextLanguage);
+        requestAnimationFrame(() => {
+            document.body.classList.remove('i18n-out');
+        });
+    }, 180);
 }
 
+/* =========================================================
+   DESIGN UND AKZENTFARBE
+========================================================= */
 
 const THEMES = ['light', 'dark', 'auto'];
 const ACCENTS = ['violet', 'blue', 'pink', 'green', 'orange'];
+const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 const lightQuery = window.matchMedia('(prefers-color-scheme: light)');
 
-let themePref = THEMES.includes(readStorage('tommy-theme')) ? readStorage('tommy-theme') : 'dark';
+let themePref = THEMES.includes(readStorage('tommy-theme'))
+    ? readStorage('tommy-theme')
+    : 'dark';
+
+let accentPref = ACCENTS.includes(readStorage('tommy-accent'))
+    ? readStorage('tommy-accent')
+    : 'violet';
+
+let fxOn = readStorage('tommy-fx') !== 'off';
+
+let motionOn = readStorage('tommy-motion')
+    ? readStorage('tommy-motion') === 'on'
+    : !reducedMotionQuery.matches;
+
+let autoplayOn = readStorage('tommy-autoplay') !== 'off';
 
 function resolveTheme(pref) {
     if (pref === 'auto') {
@@ -316,8 +359,11 @@ function applyTheme(pref) {
         meta.setAttribute('content', value === 'light' ? '#f4f3fa' : '#08090c');
     }
 
-    document.querySelectorAll('[data-theme-option]').forEach((el) => {
-        el.setAttribute('aria-pressed', String(el.dataset.themeOption === pref));
+    document.querySelectorAll('[data-theme-option]').forEach((element) => {
+        element.setAttribute(
+            'aria-pressed',
+            String(element.dataset.themeOption === pref)
+        );
     });
 }
 
@@ -331,22 +377,14 @@ function setTheme(pref) {
     applyTheme(themePref);
 
     clearTimeout(themeTimer);
-    themeTimer = setTimeout(() => root.classList.remove('theme-fade'), 750);
+    themeTimer = setTimeout(() => {
+        root.classList.remove('theme-fade');
+    }, 500);
 }
 
 lightQuery.addEventListener('change', () => {
-    if (themePref === 'auto') {
-        applyTheme('auto');
-    }
+    if (themePref === 'auto') applyTheme('auto');
 });
-
-
-/* Akzentfarbe, Effekte, Animationen, Musik */
-
-let accentPref = ACCENTS.includes(readStorage('tommy-accent')) ? readStorage('tommy-accent') : 'violet';
-let fxOn = readStorage('tommy-fx') !== 'off';
-let motionOn = readStorage('tommy-motion') ? readStorage('tommy-motion') === 'on' : !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-let autoplayOn = readStorage('tommy-autoplay') !== 'off';
 
 function setAccent(name) {
     accentPref = ACCENTS.includes(name) ? name : 'violet';
@@ -358,105 +396,125 @@ function setAccent(name) {
         root.setAttribute('data-accent', accentPref);
     }
 
-    document.querySelectorAll('[data-accent-option]').forEach((el) => {
-        el.setAttribute('aria-pressed', String(el.dataset.accentOption === accentPref));
+    document.querySelectorAll('[data-accent-option]').forEach((element) => {
+        element.setAttribute(
+            'aria-pressed',
+            String(element.dataset.accentOption === accentPref)
+        );
     });
 
-    updateRange(els.volume);
-    updateRange(els.seek);
+    if (els.volume) updateRange(els.volume);
+    if (els.seek) updateRange(els.seek);
 }
 
 function setFx(on) {
-    fxOn = on;
-    writeStorage('tommy-fx', on ? 'on' : 'off');
-    root.classList.toggle('no-fx', !on);
-    setSwitch('switch-fx', on);
+    fxOn = Boolean(on);
+    writeStorage('tommy-fx', fxOn ? 'on' : 'off');
+    root.classList.toggle('no-fx', !fxOn);
+    setSwitch('switch-fx', fxOn);
 }
 
 function setMotion(on) {
-    motionOn = on;
-    writeStorage('tommy-motion', on ? 'on' : 'off');
-    root.classList.toggle('no-motion', !on);
-    root.classList.toggle('motion-on', on);
-    setSwitch('switch-motion', on);
+    motionOn = Boolean(on);
+    writeStorage('tommy-motion', motionOn ? 'on' : 'off');
 
-    reducedMotion = !on;
+    root.classList.toggle('no-motion', !motionOn);
+    root.classList.toggle('motion-on', motionOn);
+    setSwitch('switch-motion', motionOn);
+
+    reducedMotion = !motionOn || reducedMotionQuery.matches;
     visualizerOff = !ENABLE_VISUALIZER || reducedMotion;
 
     if (visualizerOff) {
+        stopVisualizer();
         bass = 0;
         mid = 0;
         lastBass = -1;
         lastMid = -1;
         setLevels(0, 0);
-    } else if (!els.audio.paused) {
+    } else if (els.audio && !els.audio.paused) {
         setupAnalyser();
         startVisualizer();
     }
 }
 
 function setAutoplay(on) {
-    autoplayOn = on;
-    writeStorage('tommy-autoplay', on ? 'on' : 'off');
-    setSwitch('switch-autoplay', on);
+    autoplayOn = Boolean(on);
+    writeStorage('tommy-autoplay', autoplayOn ? 'on' : 'off');
+    setSwitch('switch-autoplay', autoplayOn);
 }
 
 function setSwitch(id, on) {
-    $(id).setAttribute('aria-checked', String(on));
+    const element = $(id);
+    if (element) element.setAttribute('aria-checked', String(Boolean(on)));
 }
 
 function resetSettings() {
-    ['tommy-theme', 'tommy-accent', 'tommy-fx', 'tommy-motion', 'tommy-autoplay'].forEach((key) => {
-        try {
-            localStorage.removeItem(key);
-        } catch {
-            return;
-        }
-    });
+    [
+        'tommy-theme',
+        'tommy-accent',
+        'tommy-fx',
+        'tommy-motion',
+        'tommy-autoplay'
+    ].forEach(removeStorage);
 
     setTheme('dark');
     setAccent('violet');
     setFx(true);
-    setMotion(!window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    setMotion(!reducedMotionQuery.matches);
     setAutoplay(true);
 }
 
-
-/* Einstellungsmenü */
+/* =========================================================
+   EINSTELLUNGSMENÜ
+========================================================= */
 
 function setPanel(open) {
+    if (!els.settingsPanel || !els.settingsButton) return;
+
     els.settingsPanel.classList.toggle('open', open);
     els.settingsPanel.setAttribute('aria-hidden', String(!open));
     els.settingsButton.setAttribute('aria-expanded', String(open));
 }
 
 function setupSettings() {
+    if (!els.settingsButton || !els.settingsPanel) return;
+
     els.settingsButton.addEventListener('click', () => {
         setPanel(!els.settingsPanel.classList.contains('open'));
     });
 
     document.addEventListener('click', (event) => {
-        if (els.settingsPanel.classList.contains('open') && !event.target.closest('.settings')) {
+        if (
+            els.settingsPanel.classList.contains('open') &&
+            !event.target.closest('.settings')
+        ) {
             setPanel(false);
         }
     });
 
-    document.querySelectorAll('[data-lang-option]').forEach((el) => {
-        el.addEventListener('click', () => setLanguage(el.dataset.langOption));
+    document.querySelectorAll('[data-lang-option]').forEach((element) => {
+        element.addEventListener('click', () => {
+            setLanguage(element.dataset.langOption);
+        });
     });
 
-    document.querySelectorAll('[data-theme-option]').forEach((el) => {
-        el.addEventListener('click', () => setTheme(el.dataset.themeOption));
+    document.querySelectorAll('[data-theme-option]').forEach((element) => {
+        element.addEventListener('click', () => {
+            setTheme(element.dataset.themeOption);
+        });
     });
 
-    document.querySelectorAll('[data-accent-option]').forEach((el) => {
-        el.addEventListener('click', () => setAccent(el.dataset.accentOption));
+    document.querySelectorAll('[data-accent-option]').forEach((element) => {
+        element.addEventListener('click', () => {
+            setAccent(element.dataset.accentOption);
+        });
     });
 
-    $('switch-fx').addEventListener('click', () => setFx(!fxOn));
-    $('switch-motion').addEventListener('click', () => setMotion(!motionOn));
-    $('switch-autoplay').addEventListener('click', () => setAutoplay(!autoplayOn));
-    $('settings-reset').addEventListener('click', resetSettings);
+    $('switch-fx')?.addEventListener('click', () => setFx(!fxOn));
+    $('switch-motion')?.addEventListener('click', () => setMotion(!motionOn));
+    $('switch-autoplay')?.addEventListener('click', () => setAutoplay(!autoplayOn));
+    $('settings-reset')?.addEventListener('click', resetSettings);
 
     setFx(fxOn);
     setSwitch('switch-motion', motionOn);
@@ -464,8 +522,9 @@ function setupSettings() {
     setAccent(accentPref);
 }
 
-
-/* Info-Buch */
+/* =========================================================
+   INFO-BUCH
+========================================================= */
 
 const book = {
     page: 0,
@@ -475,8 +534,10 @@ const book = {
 function showBookPage(index) {
     const pages = [...document.querySelectorAll('.book-page')];
     const dots = [...document.querySelectorAll('.book-dot')];
-    const last = pages.length - 1;
 
+    if (!pages.length) return;
+
+    const last = pages.length - 1;
     book.page = Math.min(Math.max(index, 0), last);
 
     pages.forEach((page, i) => {
@@ -484,23 +545,32 @@ function showBookPage(index) {
         page.classList.toggle('leaving', i < book.page);
     });
 
-    dots.forEach((dot, i) => dot.classList.toggle('active', i === book.page));
+    dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === book.page);
+    });
 
-    $('book-prev').disabled = book.page === 0;
-    $('book-next').disabled = book.page === last;
+    const previous = $('book-prev');
+    const next = $('book-next');
+
+    if (previous) previous.disabled = book.page === 0;
+    if (next) next.disabled = book.page === last;
 }
 
 function openBook() {
+    if (!els.bookOverlay) return;
+
     setPanel(false);
     book.lastFocus = document.activeElement;
     showBookPage(0);
 
     els.bookOverlay.classList.add('open');
     els.bookOverlay.setAttribute('aria-hidden', 'false');
-    $('book-close').focus({ preventScroll: true });
+    $('book-close')?.focus({ preventScroll: true });
 }
 
 function closeBook() {
+    if (!els.bookOverlay) return;
+
     els.bookOverlay.classList.remove('open');
     els.bookOverlay.setAttribute('aria-hidden', 'true');
 
@@ -510,65 +580,65 @@ function closeBook() {
 }
 
 function setupBook() {
+    if (!els.infoButton || !els.bookOverlay) return;
+
     els.infoButton.addEventListener('click', openBook);
-    $('book-close').addEventListener('click', closeBook);
-    $('book-prev').addEventListener('click', () => showBookPage(book.page - 1));
-    $('book-next').addEventListener('click', () => showBookPage(book.page + 1));
+    $('book-close')?.addEventListener('click', closeBook);
+    $('book-prev')?.addEventListener('click', () => showBookPage(book.page - 1));
+    $('book-next')?.addEventListener('click', () => showBookPage(book.page + 1));
 
     els.bookOverlay.addEventListener('click', (event) => {
-        if (event.target === els.bookOverlay) {
-            closeBook();
-        }
+        if (event.target === els.bookOverlay) closeBook();
     });
 }
 
 document.addEventListener('keydown', (event) => {
-    const bookOpen = els.bookOverlay.classList.contains('open');
+    const bookOpen = els.bookOverlay?.classList.contains('open') ?? false;
 
     if (event.key === 'Escape') {
         if (bookOpen) {
             closeBook();
-        } else if (els.settingsPanel.classList.contains('open')) {
+        } else if (els.settingsPanel?.classList.contains('open')) {
             setPanel(false);
-            els.settingsButton.focus();
+            els.settingsButton?.focus();
         }
-
         return;
     }
 
-    if (!bookOpen) {
-        return;
-    }
+    if (!bookOpen) return;
 
     if (event.key === 'ArrowRight') {
         showBookPage(book.page + 1);
     } else if (event.key === 'ArrowLeft') {
         showBookPage(book.page - 1);
     } else if (event.key === 'Tab') {
-        const focusable = [...els.bookOverlay.querySelectorAll('button:not(:disabled)')];
+        const focusable = [
+            ...els.bookOverlay.querySelectorAll('button:not(:disabled)')
+        ];
+
+        if (!focusable.length) return;
+
         const first = focusable[0];
-        const lastEl = focusable[focusable.length - 1];
+        const last = focusable[focusable.length - 1];
 
         if (event.shiftKey && document.activeElement === first) {
             event.preventDefault();
-            lastEl.focus();
-        } else if (!event.shiftKey && document.activeElement === lastEl) {
+            last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
             event.preventDefault();
             first.focus();
         }
     }
 });
 
-
-/* Einklappen / Aufklappen */
+/* =========================================================
+   SEKTIONEN UND PROJEKTKARTEN
+========================================================= */
 
 function setupSections() {
     document.querySelectorAll('.section-toggle').forEach((button) => {
         const target = $(button.getAttribute('aria-controls'));
-
-        if (!target) {
-            return;
-        }
+        if (!target) return;
 
         button.addEventListener('click', () => {
             const open = button.getAttribute('aria-expanded') === 'true';
@@ -584,9 +654,7 @@ function setupCards() {
         const card = head.closest('.project-card');
         const details = $(head.getAttribute('aria-controls'));
 
-        if (!card || !details) {
-            return;
-        }
+        if (!card || !details) return;
 
         const toggle = () => {
             const open = head.getAttribute('aria-expanded') === 'true';
@@ -597,6 +665,7 @@ function setupCards() {
         };
 
         head.addEventListener('click', toggle);
+
         head.addEventListener('keydown', (event) => {
             if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
@@ -606,11 +675,12 @@ function setupCards() {
     });
 }
 
+/* =========================================================
+   MUSIKPLAYER
+========================================================= */
 
 function formatTime(seconds) {
-    if (!Number.isFinite(seconds)) {
-        return '0:00';
-    }
+    if (!Number.isFinite(seconds) || seconds < 0) return '0:00';
 
     const minutes = Math.floor(seconds / 60);
     const rest = String(Math.floor(seconds % 60)).padStart(2, '0');
@@ -619,18 +689,33 @@ function formatTime(seconds) {
 }
 
 function updateRange(element) {
+    if (!element) return;
+
     const min = Number(element.min) || 0;
     const max = Number(element.max) || 100;
-    const percent = ((Number(element.value) - min) / (max - min)) * 100;
+    const range = max - min;
 
-    element.style.background = `linear-gradient(to right, var(--accent-soft) 0%, var(--accent) ${percent}%, var(--track) ${percent}%, var(--track) 100%)`;
+    if (range <= 0) return;
+
+    const value = Math.min(max, Math.max(min, Number(element.value) || 0));
+    const percent = ((value - min) / range) * 100;
+
+    element.style.background =
+        `linear-gradient(to right, var(--accent-soft) 0%, ` +
+        `var(--accent) ${percent}%, var(--track) ${percent}%, ` +
+        `var(--track) 100%)`;
 }
 
 function loadVolume() {
     const saved = readStorage('tommy-volume');
     const volume = Number(saved);
 
-    if (saved === null || Number.isNaN(volume) || volume < 0 || volume > 1) {
+    if (
+        saved === null ||
+        !Number.isFinite(volume) ||
+        volume < 0 ||
+        volume > 1
+    ) {
         return music.defaultVolume;
     }
 
@@ -642,6 +727,8 @@ function saveVolume(volume) {
 }
 
 function updatePlayButton() {
+    if (!els.audio || !els.playButton) return;
+
     const playing = !els.audio.paused;
 
     els.playButton.classList.toggle('playing', playing);
@@ -649,6 +736,8 @@ function updatePlayButton() {
 }
 
 function updateVolumeButton() {
+    if (!els.audio || !els.volumeButton) return;
+
     const muted = els.audio.muted || els.audio.volume === 0;
 
     els.volumeButton.classList.toggle('muted', muted);
@@ -656,15 +745,22 @@ function updateVolumeButton() {
 }
 
 function togglePlay() {
+    if (!els.audio) return;
+
     if (els.audio.paused) {
         setupAnalyser();
-        els.audio.play().catch((error) => console.warn('Audio konnte nicht gestartet werden:', error));
+
+        els.audio.play().catch((error) => {
+            console.warn('Audio konnte nicht gestartet werden:', error);
+        });
     } else {
         els.audio.pause();
     }
 }
 
 function toggleMute() {
+    if (!els.audio || !els.volume) return;
+
     if (els.audio.muted || els.audio.volume === 0) {
         const restored = lastVolume > 0 ? lastVolume : music.defaultVolume;
 
@@ -681,6 +777,8 @@ function toggleMute() {
 }
 
 function changeVolume() {
+    if (!els.audio || !els.volume) return;
+
     const value = Number(els.volume.value);
 
     els.audio.volume = value;
@@ -693,33 +791,41 @@ function changeVolume() {
 }
 
 function seek() {
-    if (!els.audio.duration) {
-        return;
-    }
+    if (!els.audio || !els.seek || !Number.isFinite(els.audio.duration)) return;
 
-    els.audio.currentTime = (Number(els.seek.value) / 100) * els.audio.duration;
+    els.audio.currentTime =
+        (Number(els.seek.value) / 100) * els.audio.duration;
+
     updateRange(els.seek);
 }
 
 function updateProgress() {
-    if (!els.audio.duration) {
-        return;
-    }
+    if (!els.audio || !els.seek || !Number.isFinite(els.audio.duration)) return;
 
     els.seek.value = (els.audio.currentTime / els.audio.duration) * 100;
-    els.currentTime.textContent = formatTime(els.audio.currentTime);
+
+    if (els.currentTime) {
+        els.currentTime.textContent = formatTime(els.audio.currentTime);
+    }
+
     updateRange(els.seek);
 }
 
-const ENABLE_VISUALIZER = true;
+/* =========================================================
+   MUSIKREAKTIVER HINTERGRUND
+========================================================= */
 
-let reducedMotion = !motionOn;
+const ENABLE_VISUALIZER = true;
+let reducedMotion = !motionOn || reducedMotionQuery.matches;
+
 const backgroundEl = document.querySelector('.background');
 
 let audioContext = null;
 let analyser = null;
 let freqData = null;
+let audioSource = null;
 let rafId = null;
+
 let bass = 0;
 let mid = 0;
 let lastBass = -1;
@@ -730,27 +836,28 @@ let slowFrames = 0;
 let visualizerOff = !ENABLE_VISUALIZER || reducedMotion;
 
 function setupAnalyser() {
-    if (visualizerOff) {
+    if (
+        visualizerOff ||
+        !backgroundEl ||
+        !els.audio ||
+        document.hidden
+    ) {
         return;
     }
 
     if (!audioContext) {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
-
-        if (!AudioCtx) {
-            return;
-        }
+        if (!AudioCtx) return;
 
         try {
             audioContext = new AudioCtx();
-
-            const source = audioContext.createMediaElementSource(els.audio);
+            audioSource = audioContext.createMediaElementSource(els.audio);
 
             analyser = audioContext.createAnalyser();
-            analyser.fftSize = 256;
-            analyser.smoothingTimeConstant = 0.7;
+            analyser.fftSize = 128;
+            analyser.smoothingTimeConstant = 0.8;
 
-            source.connect(analyser);
+            audioSource.connect(analyser);
             analyser.connect(audioContext.destination);
 
             freqData = new Uint8Array(analyser.frequencyBinCount);
@@ -758,6 +865,8 @@ function setupAnalyser() {
             console.warn('Audio-Analyse nicht verfügbar:', error);
             audioContext = null;
             analyser = null;
+            audioSource = null;
+            visualizerOff = true;
             return;
         }
     }
@@ -768,46 +877,60 @@ function setupAnalyser() {
 }
 
 function average(data, from, to) {
-    let sum = 0;
+    if (!data || from > to) return 0;
 
-    for (let i = from; i <= to; i++) {
+    let sum = 0;
+    let count = 0;
+
+    for (let i = from; i <= to && i < data.length; i++) {
         sum += data[i];
+        count++;
     }
 
-    return sum / (to - from + 1) / 255;
+    return count ? sum / count / 255 : 0;
 }
 
 function setLevels(bassValue, midValue) {
+    if (!backgroundEl) return;
 
-    if (Math.abs(bassValue - lastBass) > 0.01) {
+    if (Math.abs(bassValue - lastBass) > 0.015) {
         backgroundEl.style.setProperty('--bass', bassValue.toFixed(2));
         lastBass = bassValue;
     }
 
-    if (Math.abs(midValue - lastMid) > 0.01) {
+    if (Math.abs(midValue - lastMid) > 0.015) {
         backgroundEl.style.setProperty('--mid', midValue.toFixed(2));
         lastMid = midValue;
     }
 }
 
+function stopVisualizer() {
+    if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+    }
+}
 
 function checkPerformance(now) {
-    if (!startedAt) {
-        startedAt = now;
-    }
+    if (!startedAt) startedAt = now;
 
     if (lastFrame && now - startedAt > 2000) {
         const delta = now - lastFrame;
 
-        slowFrames = delta > 40 ? slowFrames + 1 : Math.max(0, slowFrames - 1);
+        slowFrames = delta > 40
+            ? slowFrames + 1
+            : Math.max(0, slowFrames - 1);
 
         if (slowFrames > 45) {
             visualizerOff = true;
+            stopVisualizer();
+
             bass = 0;
             mid = 0;
             lastBass = -1;
             lastMid = -1;
             setLevels(0, 0);
+
             console.info('Farbanimation wegen niedriger FPS ausgeschaltet.');
             return false;
         }
@@ -818,40 +941,39 @@ function checkPerformance(now) {
 }
 
 function visualize(now) {
-    if (visualizerOff) {
-        rafId = null;
+    rafId = null;
+
+    if (
+        visualizerOff ||
+        document.hidden ||
+        !els.audio ||
+        !backgroundEl
+    ) {
         return;
     }
 
-    if (!checkPerformance(now)) {
-        rafId = null;
-        return;
-    }
+    if (!checkPerformance(now)) return;
 
     let targetBass = 0;
     let targetMid = 0;
 
-    if (analyser && !els.audio.paused) {
+    if (analyser && !els.audio.paused && freqData) {
         analyser.getByteFrequencyData(freqData);
 
-
         const rawBass = average(freqData, 0, 1);
-        const rawMid = average(freqData, 3, 14);
+        const rawMid = average(freqData, 2, 8);
 
-
-        targetBass = Math.min(1, Math.max(0, (rawBass - 0.45) / 0.45));
-        targetMid = Math.min(1, Math.max(0, (rawMid - 0.3) / 0.5));
+        targetBass = Math.min(1, Math.max(0, (rawBass - 0.35) / 0.55));
+        targetMid = Math.min(1, Math.max(0, (rawMid - 0.25) / 0.55));
     }
 
-
-    bass = targetBass > bass ? targetBass : bass * 0.9;
-    mid = targetMid > mid ? targetMid : mid * 0.92;
+    bass = targetBass > bass ? targetBass : bass * 0.88;
+    mid = targetMid > mid ? targetMid : mid * 0.9;
 
     setLevels(bass, mid);
 
     if (els.audio.paused && bass < 0.01 && mid < 0.01) {
         setLevels(0, 0);
-        rafId = null;
         return;
     }
 
@@ -859,29 +981,82 @@ function visualize(now) {
 }
 
 function startVisualizer() {
-    if (!visualizerOff && rafId === null && analyser) {
-        lastFrame = 0;
-        rafId = requestAnimationFrame(visualize);
+    if (
+        visualizerOff ||
+        rafId !== null ||
+        !analyser ||
+        document.hidden
+    ) {
+        return;
     }
+
+    lastFrame = 0;
+    startedAt = 0;
+    rafId = requestAnimationFrame(visualize);
 }
 
 document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && !els.audio.paused) {
+    if (document.hidden) {
+        stopVisualizer();
+        return;
+    }
+
+    if (els.audio && !els.audio.paused) {
+        setupAnalyser();
         startVisualizer();
     }
 });
 
+reducedMotionQuery.addEventListener?.('change', (event) => {
+    // Eine explizite Auswahl des Benutzers bleibt erhalten.
+    if (readStorage('tommy-motion') !== null) return;
+
+    motionOn = !event.matches;
+    reducedMotion = event.matches;
+    visualizerOff = !ENABLE_VISUALIZER || reducedMotion;
+
+    root.classList.toggle('no-motion', !motionOn);
+    root.classList.toggle('motion-on', motionOn);
+
+    if (visualizerOff) {
+        stopVisualizer();
+        setLevels(0, 0);
+    } else if (els.audio && !els.audio.paused) {
+        setupAnalyser();
+        startVisualizer();
+    }
+});
+
+/* =========================================================
+   AUDIO INITIALISIEREN
+========================================================= */
 
 function initAudio() {
+    if (
+        !els.audio ||
+        !els.playButton ||
+        !els.volumeButton ||
+        !els.volume ||
+        !els.seek
+    ) {
+        console.warn('Musikplayer: Mindestens ein HTML-Element fehlt.');
+        return;
+    }
+
     const volume = loadVolume();
 
-    els.title.textContent = music.title;
+    if (els.title) els.title.textContent = music.title;
+    if (els.artist) els.artist.textContent = music.artist;
+
     els.audio.src = music.file;
+    els.audio.preload = 'metadata';
     els.audio.volume = volume;
+
     els.volume.value = volume;
     lastVolume = volume;
 
     updateRange(els.volume);
+    updateRange(els.seek);
     updatePlayButton();
     updateVolumeButton();
 
@@ -891,39 +1066,82 @@ function initAudio() {
     els.seek.addEventListener('input', seek);
 
     els.audio.addEventListener('timeupdate', updateProgress);
+
     els.audio.addEventListener('loadedmetadata', () => {
-        els.duration.textContent = formatTime(els.audio.duration);
+        if (els.duration) {
+            els.duration.textContent = formatTime(els.audio.duration);
+        }
+        updateProgress();
     });
+
     els.audio.addEventListener('play', () => {
         updatePlayButton();
-        startVisualizer();
+
+        if (!document.hidden) {
+            setupAnalyser();
+            startVisualizer();
+        }
     });
-    els.audio.addEventListener('pause', updatePlayButton);
+
+    els.audio.addEventListener('pause', () => {
+        updatePlayButton();
+
+        // Der Visualizer lässt die Werte sanft auf null zurückgehen.
+        if (!document.hidden && !visualizerOff && analyser) {
+            startVisualizer();
+        }
+    });
+
+    els.audio.addEventListener('volumechange', updateVolumeButton);
+
     els.audio.addEventListener('error', () => {
         console.error('Musikdatei konnte nicht geladen werden:', music.file);
         audioError = true;
-        els.artist.textContent = t('musicMissing');
+
+        if (els.artist) {
+            els.artist.textContent = t('musicMissing');
+        }
     });
 }
 
+/* =========================================================
+   SEITENSTART UND EINTRITT
+========================================================= */
+
 function scrollToTop() {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'instant'
+    });
 }
 
 function keepTopWhileLocked() {
-    if (document.body.classList.contains('locked') && window.scrollY !== 0) {
+    if (
+        document.body.classList.contains('locked') &&
+        window.scrollY !== 0
+    ) {
         scrollToTop();
     }
 }
 
 function enterWebsite() {
     document.body.classList.remove('locked');
-    scrollToTop();
-    els.welcomeScreen.classList.add('hidden');
 
-    if (autoplayOn) {
+    scrollToTop();
+
+    if (els.welcomeScreen) {
+        els.welcomeScreen.classList.add('hidden');
+        els.welcomeScreen.setAttribute('aria-hidden', 'true');
+    }
+
+    if (autoplayOn && els.audio) {
         setupAnalyser();
-        els.audio.play().catch(() => {});
+
+        els.audio.play().catch((error) => {
+            // Browser können Autoplay trotz Nutzereingabe blockieren.
+            console.warn('Musik konnte nicht automatisch starten:', error);
+        });
     }
 }
 
@@ -935,12 +1153,22 @@ function init() {
     }
 
     scrollToTop();
+
     window.addEventListener('load', keepTopWhileLocked);
     window.addEventListener('scroll', keepTopWhileLocked, { passive: true });
 
-    lucide.createIcons();
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+    }
 
+    // Einstellungen zuerst anwenden, damit die Seite direkt richtig erscheint.
     applyTheme(themePref);
+    setAccent(accentPref);
+    setFx(fxOn);
+
+    root.classList.toggle('no-motion', !motionOn);
+    root.classList.toggle('motion-on', motionOn);
+
     initAudio();
     applyLanguage(currentLang);
     setupSettings();
@@ -948,7 +1176,21 @@ function init() {
     setupSections();
     setupCards();
 
-    els.enterButton.addEventListener('click', enterWebsite, { once: true });
+    if (els.enterButton) {
+        els.enterButton.addEventListener('click', enterWebsite, { once: true });
+    }
+
+    // Das Info-Buch und Menüs bleiben bei einem Seitenwechsel geschlossen.
+    window.addEventListener('pagehide', () => {
+        stopVisualizer();
+
+        if (audioContext && audioContext.state !== 'closed') {
+            audioContext.suspend().catch(() => {});
+        }
+
+        clearTimeout(langTimer);
+        clearTimeout(themeTimer);
+    }, { once: true });
 }
 
 init();
