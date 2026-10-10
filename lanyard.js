@@ -1,12 +1,13 @@
+
 'use strict';
 
-
-(function () {
+(() => {
     const USER_ID = '881206091009122406';
     const API_URL = `https://api.lanyard.rest/v1/users/${USER_ID}`;
-    const REFRESH_MS = 30000;
+    const REFRESH_MS = 30_000;
+    const REQUEST_TIMEOUT_MS = 8_000;
 
-    const text = {
+    const translations = {
         de: {
             online: 'Online',
             idle: 'Abwesend',
@@ -31,112 +32,220 @@
         }
     };
 
-    const dot = document.getElementById('online-dot');
-    const box = document.getElementById('presence');
-    const statusText = document.getElementById('presence-status');
-    const activityBox = document.getElementById('presence-activity');
-    const activityText = document.getElementById('presence-activity-text');
+    const elements = {
+        dot: document.getElementById('online-dot'),
+        box: document.getElementById('presence'),
+        status: document.getElementById('presence-status'),
+        activity: document.getElementById('presence-activity'),
+        activityText: document.getElementById('presence-activity-text')
+    };
 
-    if (!dot || !box || !activityBox) {
+    if (
+        !elements.dot ||
+        !elements.box ||
+        !elements.status ||
+        !elements.activity ||
+        !elements.activityText
+    ) {
         return;
     }
 
-    let data = null;
+    let userData = null;
+    let isLoading = false;
+    let lastSuccessfulUpdate = 0;
+    let activeController = null;
 
-    function tr(key) {
-        const lang = document.documentElement.getAttribute('lang') === 'en' ? 'en' : 'de';
+    function getLanguage() {
+        return document.documentElement.getAttribute('lang') === 'en'
+            ? 'en'
+            : 'de';
+    }
 
-        return text[lang][key];
+    function translate(key) {
+        return translations[getLanguage()][key] || key;
     }
 
     function describeActivity(user) {
-        const list = Array.isArray(user.activities) ? user.activities : [];
+        const activities = Array.isArray(user.activities)
+            ? user.activities
+            : [];
 
-        const main = list.find((a) => [0, 1, 3, 5].includes(a.type));
+        const activityTypes = {
+            0: 'playing',
+            1: 'streaming',
+            3: 'watching',
+            5: 'competing'
+        };
 
-        if (main) {
-            const key = { 0: 'playing', 1: 'streaming', 3: 'watching', 5: 'competing' }[main.type];
+        const mainActivity = activities.find(activity =>
+            Object.prototype.hasOwnProperty.call(
+                activityTypes,
+                activity.type
+            ) && activity.name
+        );
 
-            return { kind: 'game', text: `${tr(key)} ${main.name}` };
+        if (mainActivity) {
+            const label = translate(activityTypes[mainActivity.type]);
+
+            return {
+                kind: 'game',
+                text: `${label} ${mainActivity.name}`
+            };
         }
 
         if (user.listening_to_spotify && user.spotify) {
-            const artist = String(user.spotify.artist || '').replace(/;\s*/g, ', ');
+            const song = user.spotify.song || '';
+            const artist = String(user.spotify.artist || '')
+                .replace(/;\s*/g, ', ');
 
-            return { kind: 'spotify', text: `${tr('listening')} ${user.spotify.song} · ${artist}` };
+            const details = [song, artist].filter(Boolean).join(' · ');
+
+            if (details) {
+                return {
+                    kind: 'spotify',
+                    text: `${translate('listening')} ${details}`
+                };
+            }
         }
 
-        const custom = list.find((a) => a.type === 4 && a.state);
+        const customActivity = activities.find(activity =>
+            activity.type === 4 && activity.state
+        );
 
-        if (custom) {
-            return { kind: 'custom', text: custom.state };
+        if (customActivity) {
+            return {
+                kind: 'custom',
+                text: customActivity.state
+            };
         }
 
         return null;
     }
 
     function render() {
-        if (!data) {
-            box.hidden = true;
-            activityBox.hidden = true;
-            dot.removeAttribute('data-status');
+        if (!userData) {
+            elements.box.hidden = true;
+            elements.activity.hidden = true;
+            elements.dot.removeAttribute('data-status');
             return;
         }
 
-        const status = ['online', 'idle', 'dnd'].includes(data.discord_status) ? data.discord_status : 'offline';
-        const label = tr(status);
+        const allowedStatuses = ['online', 'idle', 'dnd'];
 
-        dot.dataset.status = status;
-        dot.title = label;
-        box.dataset.status = status;
-        statusText.textContent = label;
-        box.hidden = false;
+        const status = allowedStatuses.includes(userData.discord_status)
+            ? userData.discord_status
+            : 'offline';
 
-        const activity = describeActivity(data);
+        const label = translate(status);
+
+        elements.dot.dataset.status = status;
+        elements.dot.title = label;
+
+        elements.box.dataset.status = status;
+        elements.status.textContent = label;
+        elements.box.hidden = false;
+
+        const activity = describeActivity(userData);
 
         if (activity) {
-            activityBox.dataset.kind = activity.kind;
-            activityText.textContent = activity.text;
-            activityText.title = activity.text;
-            activityBox.hidden = false;
+            elements.activity.dataset.kind = activity.kind;
+            elements.activityText.textContent = activity.text;
+            elements.activityText.title = activity.text;
+            elements.activity.hidden = false;
         } else {
-            activityBox.hidden = true;
+            elements.activity.hidden = true;
+            elements.activity.removeAttribute('data-kind');
+            elements.activityText.textContent = '';
+            elements.activityText.removeAttribute('title');
         }
     }
 
-    async function load() {
+    async function load({ force = false } = {}) {
+        if (isLoading || document.hidden) {
+            return;
+        }
+
+        // Bei einem schnellen erneuten Aufruf nicht unnötig laden.
+        if (
+            !force &&
+            Date.now() - lastSuccessfulUpdate < REFRESH_MS - 1_000
+        ) {
+            return;
+        }
+
+        isLoading = true;
+        activeController = new AbortController();
+
+        const timeoutId = setTimeout(() => {
+            activeController?.abort();
+        }, REQUEST_TIMEOUT_MS);
+
         try {
-            const response = await fetch(API_URL, { cache: 'no-store' });
+            const response = await fetch(API_URL, {
+                method: 'GET',
+                cache: 'no-store',
+                headers: {
+                    Accept: 'application/json'
+                },
+                signal: activeController.signal
+            });
 
             if (!response.ok) {
-                return;
+                throw new Error(`Lanyard HTTP ${response.status}`);
             }
 
-            const json = await response.json();
+            const result = await response.json();
 
-            data = json && json.success ? json.data : null;
+            if (!result || result.success !== true || !result.data) {
+                throw new Error('Ungültige Antwort von Lanyard');
+            }
+
+            // Vorhandene Daten bei einem API-Fehler nicht löschen.
+            userData = result.data;
+            lastSuccessfulUpdate = Date.now();
+
             render();
         } catch (error) {
-            console.warn('Lanyard nicht erreichbar:', error);
+            if (error.name !== 'AbortError') {
+                console.warn('Lanyard konnte nicht geladen werden:', error);
+            }
+        } finally {
+            clearTimeout(timeoutId);
+            activeController = null;
+            isLoading = false;
         }
     }
 
-    new MutationObserver(render).observe(document.documentElement, {
+
+    const languageObserver = new MutationObserver(() => {
+        render();
+    });
+
+    languageObserver.observe(document.documentElement, {
         attributes: true,
         attributeFilter: ['lang']
     });
 
+    
     document.addEventListener('visibilitychange', () => {
         if (!document.hidden) {
-            load();
+            load({ force: true });
         }
     });
 
-    setInterval(() => {
+ 
+    const refreshInterval = setInterval(() => {
         if (!document.hidden) {
             load();
         }
     }, REFRESH_MS);
 
-    load();
+  
+    window.addEventListener('pagehide', () => {
+        clearInterval(refreshInterval);
+        languageObserver.disconnect();
+        activeController?.abort();
+    }, { once: true });
+
+    load({ force: true });
 })();
